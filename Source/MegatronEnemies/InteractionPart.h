@@ -16,6 +16,8 @@ class MEGATRONENEMIES_API UInteractionPart : public UBodyPart
 
 public:
 
+	UInteractionPart();
+
 	UFUNCTION(BlueprintNativeEvent)
 	void ExecuteAction();
 

@@ -3,6 +3,11 @@
 
 #include "LocomotionPart.h"
 
+ULocomotionPart::ULocomotionPart()
+{
+	Type = EBodyPartType::LOCOMOTION;
+}
+
 float ULocomotionPart::GetBaseSpeed() const
 {
 	return BaseSpeed;

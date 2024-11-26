@@ -38,6 +38,8 @@ class MEGATRONENEMIES_API ULocomotionPart : public UBodyPart
 
 public:
 
+	ULocomotionPart();
+
 	UFUNCTION(BlueprintCallable)
 	float GetBaseSpeed()			const;
 
