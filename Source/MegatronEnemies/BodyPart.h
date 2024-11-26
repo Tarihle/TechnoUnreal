@@ -6,8 +6,19 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "BodyPart.generated.h"
 
+
+UENUM(BlueprintType)
+enum class EBodyPartType : uint8
+{
+	INVALID,
+	CONNECTOR,
+	LOCOMOTION,
+	INTERACTION,
+	PERCEPTION
+};
+
 /**
- * 
+ *
  */
 UCLASS()
 class MEGATRONENEMIES_API UBodyPart : public USkeletalMeshComponent
@@ -16,8 +27,14 @@ class MEGATRONENEMIES_API UBodyPart : public USkeletalMeshComponent
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stats)
-	float LocalHealth = 0.f;
+	float			LocalHealth = 0.f;
+	EBodyPartType	Type = EBodyPartType::INVALID;
 
 public:
 	UBodyPart();
+
+	static bool IsInteraction(UBodyPart* Part);
+	static bool IsConnector(UBodyPart* Part);
+	static bool IsPerception(UBodyPart* Part);
+	static bool IsLocomotion(UBodyPart* Part);
 };
