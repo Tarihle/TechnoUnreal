@@ -3,6 +3,12 @@
 
 #include "LocomotionManager.h"
 
+#include "ConnectorPart.h"
+#include "LocomotionPart.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
+
+
 // Sets default values for this component's properties
 ULocomotionManager::ULocomotionManager()
 {
@@ -13,6 +19,66 @@ ULocomotionManager::ULocomotionManager()
 	// ...
 }
 
+void ULocomotionManager::Initialize(const TArray<class UConnectorPart*>& Connectors)
+{
+	OwnerCharacter = CastChecked<ACharacter>(GetOwner());
+
+	float LegCount = 0;
+
+	for (UConnectorPart* Trunk : Connectors)
+	{
+		for (ULocomotionPart* Leg : Trunk->LocomotionParts)
+		{
+			FMovementConstraints& Constraints = Leg->GetMovementConstraints();
+
+			++LegCount;
+
+			if (Constraints.bCanJump)
+				GlobalJumpForce += Leg->GetJumpForce();
+
+			if (!Constraints.bCanWalk)
+				continue;
+
+			GlobalWalkSpeed += Leg->GetBaseSpeed();
+
+			if (Constraints.bCanSprint)
+				GlobalSprintMultiplier *= Leg->GetSprintMultiplier();
+
+			if (Constraints.bCanCrouch)
+				AverageCrouchMultiplier += Leg->GetCrouchMultiplier();
+
+			bCanEverCrouch &= Constraints.bCanCrouch;
+			bCanEverJump &= Constraints.bCanJump;
+			bCanEverSprint &= Constraints.bCanSprint;
+			bCanEverWalk &= Constraints.bCanWalk;
+
+		}
+	}
+
+	if (!bCanEverWalk)
+		GlobalWalkSpeed = 0.f;
+
+	if (LegCount)
+		AverageCrouchMultiplier /= LegCount;
+
+	UCharacterMovementComponent* Movement = OwnerCharacter->GetCharacterMovement();
+
+	Movement->JumpZVelocity = GlobalJumpForce;
+	Movement->MaxWalkSpeed = GlobalWalkSpeed;
+	Movement->MaxWalkSpeedCrouched = GlobalWalkSpeed * AverageCrouchMultiplier;
+}
+
+
+void ULocomotionManager::Jump()
+{
+	if (bCanEverJump)
+		OwnerCharacter->Jump();
+}
+
+void ULocomotionManager::StopJumping()
+{
+	OwnerCharacter->StopJumping();
+}
 
 // Called when the game starts
 void ULocomotionManager::BeginPlay()
@@ -32,11 +98,33 @@ void ULocomotionManager::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	// ...
 }
 
-void ULocomotionManager::DecreaseGlobalSpeeds(float WalkSpeed, float SprintModifier)
+void ULocomotionManager::OnPartDestroyed(ULocomotionPart* Part)
 {
-	GlobalWalkSpeed -= WalkSpeed;
-	GlobalSprintMultiplier /= SprintModifier;
+	GlobalWalkSpeed -= Part->GetBaseSpeed();
+	GlobalSprintMultiplier /= Part->GetSprintMultiplier();
+	GlobalJumpForce -= Part->GetJumpForce();
 
+}
 
+void ULocomotionManager::Sprint()
+{
+	if (bCanEverSprint)
+		OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GlobalWalkSpeed * GlobalSprintMultiplier;
+}
+
+void ULocomotionManager::StopSprinting()
+{
+	OwnerCharacter->GetCharacterMovement()->MaxWalkSpeed = GlobalWalkSpeed;
+}
+
+void ULocomotionManager::Crouch()
+{
+	if (bCanEverCrouch)
+		OwnerCharacter->Crouch();
+}
+
+void ULocomotionManager::StopCrouching()
+{
+	OwnerCharacter->UnCrouch();
 }
 
