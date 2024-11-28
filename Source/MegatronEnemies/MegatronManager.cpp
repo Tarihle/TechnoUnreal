@@ -24,7 +24,7 @@ void UMegatronManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	LocomotionManager->Initialize(Connectors);
 
 }
 
@@ -35,5 +35,20 @@ void UMegatronManager::TickComponent(float DeltaTime, ELevelTick TickType, FActo
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+ULocomotionManager* UMegatronManager::GetLocomotion()
+{
+	return LocomotionManager;
+}
+
+UInteractionManager* UMegatronManager::GetInteraction()
+{
+	return InteractionManager;
+}
+
+UPerceptionManager* UMegatronManager::GetPerception()
+{
+	return PerceptionManager;
 }
 

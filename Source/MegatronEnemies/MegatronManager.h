@@ -19,6 +19,16 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	UFUNCTION(BlueprintPure)
+	class ULocomotionManager*		GetLocomotion();
+
+	UFUNCTION(BlueprintPure)
+	class UInteractionManager*		GetInteraction();
+
+	UFUNCTION(BlueprintPure)
+	class UPerceptionManager*		GetPerception();
+
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -29,6 +39,7 @@ private:
 	TObjectPtr<class UInteractionManager>	InteractionManager;
 	TObjectPtr<class UPerceptionManager>	PerceptionManager;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Megatron", meta = (AllowPrivateAccess = "true"))
 	TArray<class UConnectorPart*>	Connectors;
 
 	// TODO: add possible connectors
@@ -37,7 +48,7 @@ private:
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy parameters")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Megatron")
 	int32	CharacterLevel = 1;
 
 };
