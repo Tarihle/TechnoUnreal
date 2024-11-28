@@ -27,3 +27,8 @@ float ULocomotionPart::GetCrouchMultiplier() const
 {
 	return CrouchMultiplier;
 }
+
+FMovementConstraints& ULocomotionPart::GetMovementConstraints()
+{
+	return MovementConstraints;
+}

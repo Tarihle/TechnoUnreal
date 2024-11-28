@@ -15,16 +15,16 @@ struct FMovementConstraints
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool CanWalk = true;
+	bool bCanWalk = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool CanSprint = true;
+	bool bCanSprint = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool CanJump = true;
+	bool bCanJump = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool CanCrouch = true;
+	bool bCanCrouch = true;
 };
 
 
@@ -40,35 +40,37 @@ public:
 
 	ULocomotionPart();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	float GetBaseSpeed()			const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	float GetSprintMultiplier()		const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	float GetJumpForce()			const;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	float GetCrouchMultiplier()		const;
 
+	UFUNCTION(BlueprintPure)
+	FMovementConstraints& GetMovementConstraints();
 
 // TODO: Cut tooltip into several lines if possible
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ToolTip = "What each instance of this part will add to the attached character's movement speed. 2 legs will have this value x2"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement", meta = (ToolTip = "What each instance of this part will add to the attached character's movement speed. 2 legs will have this value x2"))
 	float	BaseSpeed = 450.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float	SprintMultiplier = 1.5f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float	JumpForce = 200.f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
 	float	CrouchMultiplier = 0.5f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	FMovementConstraints Constraints;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement")
+	FMovementConstraints MovementConstraints;
 
 };
