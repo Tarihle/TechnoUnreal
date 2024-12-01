@@ -21,8 +21,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Parts")
 	TArray<class ULocomotionPart*>  LocomotionParts;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Parts")
-	TArray<class UPerceptionPart*>  PerceptionParts;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Parts")
+	//TArray<class UPerceptionPart*>  PerceptionParts;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Parts")
 	TArray<class UInteractionPart*> InteractionParts;
