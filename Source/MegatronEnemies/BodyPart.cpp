@@ -3,6 +3,11 @@
 
 #include "BodyPart.h"
 
+void UBodyPart::BeginPlay()
+{
+	Super::BeginPlay();
+}
+
 UBodyPart::UBodyPart()
 {
 }

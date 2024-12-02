@@ -30,7 +30,12 @@ protected:
 	float			LocalHealth = 0.f;
 	EBodyPartType	Type = EBodyPartType::INVALID;
 
+	virtual void BeginPlay() override;
+
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
+	FComponentReference MeshReference;
+
 	UBodyPart();
 
 	static bool IsInteraction(UBodyPart* Part);

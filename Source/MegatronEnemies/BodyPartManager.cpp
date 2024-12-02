@@ -25,31 +25,31 @@ void UBodyPartManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ACharacter* OwnerRef = Cast<ACharacter>(GetOwner());
-	if (OwnerRef)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("OwnerRef"));
-		USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(MeshReference.GetComponent(OwnerRef));
-		if (Ref)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Ref"));
-			if (Body)
-			{
-				UE_LOG(LogTemp, Warning, TEXT("%s"), *Body.GetName());
-				Ref->SetSkeletalMesh(Body->SkeletalMesh);
-			}
-			else if (PossibleBodies)
-			{
-				int32 Index = FMath::RandRange(0, PossibleBodies->GetPartArray().Num() - 1);
-				UE_LOG(LogTemp, Warning, TEXT("PossibleBodies: %d"), Index);
-				Ref->SetSkeletalMesh(PossibleBodies->GetPartArray()[Index]->SkeletalMesh);
-			}
-			else
-			{
-				UE_LOG(LogTemp, Error, TEXT("Oskour"));
-			}
-		}
-	}
+	//ACharacter* OwnerRef = Cast<ACharacter>(GetOwner());
+	//if (OwnerRef)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("OwnerRef"));
+	//	USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(MeshReference.GetComponent(OwnerRef));
+	//	if (Ref)
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("Ref"));
+	//		if (Body)
+	//		{
+	//			UE_LOG(LogTemp, Warning, TEXT("%s"), *Body.GetName());
+	//			Ref->SetSkeletalMesh(Body->SkeletalMesh);
+	//		}
+	//		else if (PossibleBodies)
+	//		{
+	//			int32 Index = FMath::RandRange(0, PossibleBodies->GetPartArray().Num() - 1);
+	//			UE_LOG(LogTemp, Warning, TEXT("PossibleBodies: %d"), Index);
+	//			Ref->SetSkeletalMesh(PossibleBodies->GetPartArray()[Index]->SkeletalMesh);
+	//		}
+	//		else
+	//		{
+	//			UE_LOG(LogTemp, Error, TEXT("Oskour"));
+	//		}
+	//	}
+	//}
 
 	// ...
 	
