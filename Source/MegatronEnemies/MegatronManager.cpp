@@ -24,7 +24,7 @@ void UMegatronManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	LocomotionManager->Initialize(Connectors);
+	LocomotionManager->Initialize(/*Connectors*/);
 
 }
 

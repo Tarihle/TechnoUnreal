@@ -34,6 +34,7 @@ protected:
 
 public:
 	UBodyPart();
+	virtual void InitializeComponent() override;
 
 	static bool IsInteraction(UBodyPart* Part);
 	static bool IsConnector(UBodyPart* Part);

@@ -17,7 +17,7 @@ public:
 	ULocomotionManager();
 
 
-	void Initialize(const TArray<class UConnectorPart*>& Connectors);
+	void Initialize(/*const TArray<class UConnectorPart*>& Connectors*/);
 
 
 	// Called every frame
@@ -43,11 +43,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopJumping();
 
+	void AddArrayElement(ULocomotionPart* const& ChosenElement);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
 	TObjectPtr<class ACharacter>	OwnerCharacter;
+	TArray<class ULocomotionPart*>	ChosenLocomotionArray;
 
 private:
 
