@@ -18,10 +18,10 @@ class MEGATRONENEMIES_API UPossibleBodyParts : public UPrimaryDataAsset
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BodyParts)
-	TArray<TSubclassOf<UBodyPart>> BodyPartsArray;
+	TArray<UBodyPart*> BodyPartsArray;
 
 public:
 	UPossibleBodyParts();
 
-	TArray<TSubclassOf<UBodyPart>> GetPartArray();
+	TArray<UBodyPart*> GetPartArray();
 };

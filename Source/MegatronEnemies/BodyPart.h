@@ -33,9 +33,6 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
-	FComponentReference MeshReference;
-
 	UBodyPart();
 
 	static bool IsInteraction(UBodyPart* Part);

@@ -20,35 +20,56 @@ void UConnectorPart::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (CharacterOwnerRef)
+	if (!CharacterOwnerRef)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("CharacterOwnerRef"));
-		if (bUseInteraction && InteractionParts.Num() > 0)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("%d"), InteractionParts.Num());
-			if (InteractionParts[0])
-			{
-				UE_LOG(LogTemp, Warning, TEXT("0"));
-				UBodyPart* CastPart = Cast<UBodyPart>(InteractionParts[0]);
-				USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(CastPart->MeshReference.GetComponent(CharacterOwnerRef));
-
-				if (Ref)
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Ref"));
-					Ref->SetSkeletalMesh(CastPart->SkeletalMesh);
-				}
-			}
-			//UE_LOG(LogTemp, Warning, TEXT("%s"), *Body.GetName());
-		}
-		//else if (PossibleBodies)
-		//{
-		//	int32 Index = FMath::RandRange(0, PossibleBodies->GetPartArray().Num() - 1);
-		//	UE_LOG(LogTemp, Warning, TEXT("PossibleBodies: %d"), Index);
-		//	Ref->SetSkeletalMesh(PossibleBodies->GetPartArray()[Index]->SkeletalMesh);
-		//}
-		//else
-		//{
-		//	UE_LOG(LogTemp, Error, TEXT("Oskour"));
-		//}
+		return;
 	}
+
+	if (bUseInteraction && InteractionParts.Num() > 0)
+	{
+		USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(InteractionParts[0].MeshReference.GetComponent(CharacterOwnerRef));
+		if (!Ref)
+		{
+			UE_LOG(LogTemp, Error, TEXT("No Ref"));
+		}
+		else if (InteractionParts[0].DefaultInteractionPart)
+		{
+			Ref->SetSkeletalMesh(InteractionParts[0].DefaultInteractionPart->SkeletalMesh);
+		}
+		else if (InteractionParts[0].PossibleInteractions)
+		{
+			int32 Index = FMath::RandRange(0, InteractionParts[0].PossibleInteractions->GetPartArray().Num() - 1);
+
+			//if (!InteractionParts[0].PossibleInteractions->GetPartArray()[Index]->StaticClass()->IsChildOf(UInteractionPart::StaticClass()))
+			//{
+			//	UE_LOG(LogTemp, Error, TEXT("Class : %s"), *(InteractionParts[0].PossibleInteractions->GetPartArray()[Index]->StaticClass()->GetFName()).ToString());
+			//}
+			//UInteractionPart* CastPart = Cast<UInteractionPart>(InteractionParts[0].PossibleInteractions->GetPartArray()[Index]);
+			//if (CastPart)
+			//{
+			//	Ref->SetSkeletalMesh(CastPart->SkeletalMesh);
+			//}
+			//else
+			//{
+			//	UE_LOG(LogTemp, Error, TEXT("No Cast, Index = %d"), Index);
+			//}
+			Ref->SetSkeletalMesh(InteractionParts[0].PossibleInteractions->GetPartArray()[Index]->SkeletalMesh);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Oskour"));
+		}
+	}
+}
+
+FIndividualInteraction::FIndividualInteraction()
+{
+}
+
+FIndividualLocomotion::FIndividualLocomotion()
+{
+}
+
+FIndividualPerception::FIndividualPerception()
+{
 }
