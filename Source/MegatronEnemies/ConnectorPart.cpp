@@ -27,37 +27,28 @@ void UConnectorPart::BeginPlay()
 
 	if (bUseInteraction && InteractionParts.Num() > 0)
 	{
-		USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(InteractionParts[0].MeshReference.GetComponent(CharacterOwnerRef));
-		if (!Ref)
+		for (int i = 0; i < InteractionParts.Num(); i++)
 		{
-			UE_LOG(LogTemp, Error, TEXT("No Ref"));
-		}
-		else if (InteractionParts[0].DefaultInteractionPart)
-		{
-			Ref->SetSkeletalMesh(InteractionParts[0].DefaultInteractionPart->SkeletalMesh);
-		}
-		else if (InteractionParts[0].PossibleInteractions)
-		{
-			int32 Index = FMath::RandRange(0, InteractionParts[0].PossibleInteractions->GetPartArray().Num() - 1);
+			USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(InteractionParts[i].MeshReference.GetComponent(CharacterOwnerRef));
+			if (!Ref)
+			{
+				UE_LOG(LogTemp, Error, TEXT("No Ref"));
+			}
 
-			//if (!InteractionParts[0].PossibleInteractions->GetPartArray()[Index]->StaticClass()->IsChildOf(UInteractionPart::StaticClass()))
-			//{
-			//	UE_LOG(LogTemp, Error, TEXT("Class : %s"), *(InteractionParts[0].PossibleInteractions->GetPartArray()[Index]->StaticClass()->GetFName()).ToString());
-			//}
-			//UInteractionPart* CastPart = Cast<UInteractionPart>(InteractionParts[0].PossibleInteractions->GetPartArray()[Index]);
-			//if (CastPart)
-			//{
-			//	Ref->SetSkeletalMesh(CastPart->SkeletalMesh);
-			//}
-			//else
-			//{
-			//	UE_LOG(LogTemp, Error, TEXT("No Cast, Index = %d"), Index);
-			//}
-			Ref->SetSkeletalMesh(InteractionParts[0].PossibleInteractions->GetPartArray()[Index]->SkeletalMesh);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Oskour"));
+			if (InteractionParts[i].DefaultInteractionPart)
+			{
+				Ref->SetSkeletalMesh(InteractionParts[i].DefaultInteractionPart->SkeletalMesh);
+			}
+			else if (InteractionParts[i].PossibleInteractions)
+			{
+				int32 Index = FMath::RandRange(0, InteractionParts[i].PossibleInteractions->GetPartArray().Num() - 1);
+
+				Ref->SetSkeletalMesh(InteractionParts[i].PossibleInteractions->GetPartArray()[Index]->SkeletalMesh);
+			}
+			else
+			{
+				UE_LOG(LogTemp, Error, TEXT("Oskour"));
+			}
 		}
 	}
 }
