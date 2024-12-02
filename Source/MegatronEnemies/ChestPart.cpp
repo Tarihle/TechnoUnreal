@@ -1,5 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BodyPart.h"
+#include "ChestPart.h"
 
+UChestPart::UChestPart()
+{
+}

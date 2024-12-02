@@ -3,20 +3,24 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SkeletalMeshComponent.h"
-#include "BodyPart.generated.h"
+#include "BodyPart.h"
+#include "ChestPart.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class MEGATRONENEMIES_API UBodyPart : public USkeletalMeshComponent
+class MEGATRONENEMIES_API UChestPart : public UBodyPart
 {
 	GENERATED_BODY()
-
+	
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stats)
-	float LocalHealth = 0.f;
+	float MaxHealth = 0.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stats)
+	int Level = 0;
 
 public:
+	UChestPart();
 };
