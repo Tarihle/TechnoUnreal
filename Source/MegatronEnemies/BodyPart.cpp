@@ -12,6 +12,11 @@ UBodyPart::UBodyPart()
 {
 }
 
+void UBodyPart::InitializeComponent()
+{
+	Super::InitializeComponent();
+}
+
 
 bool UBodyPart::IsLocomotion(UBodyPart* Part)
 {

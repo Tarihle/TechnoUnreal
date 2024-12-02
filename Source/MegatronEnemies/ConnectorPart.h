@@ -24,6 +24,7 @@ public:
 
 	FIndividualInteraction();
 };
+
 USTRUCT(BlueprintType)
 struct FIndividualLocomotion
 {
@@ -40,6 +41,7 @@ public:
 
 	FIndividualLocomotion();
 };
+
 USTRUCT(BlueprintType)
 struct FIndividualPerception
 {
@@ -68,9 +70,10 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 public:
 
 	UConnectorPart();
+	void InitializeComponent() override;
 
 protected:
-	TObjectPtr<class ACharacter> CharacterOwnerRef;
+	TObjectPtr<class ACharacter> OwnerCharacter;
 
 	TArray<class USkeletalMesh*> PossibleMeshes;
 
@@ -87,6 +90,8 @@ protected:
 	TArray<FIndividualLocomotion>  LocomotionParts;	
 	UPROPERTY(EditAnywhere/*, BlueprintReadWrite*/, Category = BodyParts, meta = (EditCondition = "bUsePerception"))
 	TArray<FIndividualPerception>  PerceptionParts;
+
+	TObjectPtr<class ULocomotionManager> LocomotionManagerRef;
 
 	void BeginPlay() override;
 	

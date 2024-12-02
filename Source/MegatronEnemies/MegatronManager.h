@@ -20,10 +20,10 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintPure)
-	class ULocomotionManager*		GetLocomotion();
+	class UInteractionManager*		GetInteraction();
 
 	UFUNCTION(BlueprintPure)
-	class UInteractionManager*		GetInteraction();
+	class ULocomotionManager*		GetLocomotion();
 
 	UFUNCTION(BlueprintPure)
 	class UPerceptionManager*		GetPerception();
@@ -35,8 +35,8 @@ protected:
 
 private:
 
-	TObjectPtr<class ULocomotionManager>	LocomotionManager;
 	TObjectPtr<class UInteractionManager>	InteractionManager;
+	TObjectPtr<class ULocomotionManager>	LocomotionManager;
 	TObjectPtr<class UPerceptionManager>	PerceptionManager;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Megatron", meta = (AllowPrivateAccess = "true"))

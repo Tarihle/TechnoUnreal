@@ -19,15 +19,15 @@ ULocomotionManager::ULocomotionManager()
 	// ...
 }
 
-void ULocomotionManager::Initialize(const TArray<class UConnectorPart*>& Connectors)
+void ULocomotionManager::Initialize(/*const TArray<class UConnectorPart*>& Connectors*/)
 {
 	OwnerCharacter = CastChecked<ACharacter>(GetOwner());
 
 	float LegCount = 0;
 
-	for (UConnectorPart* Trunk : Connectors)
-	{
-		for (ULocomotionPart* Leg : Trunk->LocomotionParts)
+	//for (UConnectorPart* Trunk : Connectors)
+	//{
+		for (ULocomotionPart* Leg : ChosenLocomotionArray)
 		{
 			FMovementConstraints& Constraints = Leg->GetMovementConstraints();
 
@@ -53,7 +53,7 @@ void ULocomotionManager::Initialize(const TArray<class UConnectorPart*>& Connect
 			bCanEverWalk &= Constraints.bCanWalk;
 
 		}
-	}
+	//}
 
 	if (!bCanEverWalk)
 		GlobalWalkSpeed = 0.f;
@@ -78,6 +78,11 @@ void ULocomotionManager::Jump()
 void ULocomotionManager::StopJumping()
 {
 	OwnerCharacter->StopJumping();
+}
+
+void ULocomotionManager::AddArrayElement(ULocomotionPart* const& ChosenElement)
+{
+	ChosenLocomotionArray.Add(ChosenElement);
 }
 
 // Called when the game starts
