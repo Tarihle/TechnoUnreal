@@ -89,4 +89,12 @@ protected:
 	TArray<FIndividualPerception>  PerceptionParts;
 
 	void BeginPlay() override;
+	
+	/* These functions are basically the same, we separate them for usability and because we have 3 different "IndividualPart" structs */
+	UFUNCTION()
+	void GenerateInteractionParts();
+	UFUNCTION()
+	void GenerateLocomotionParts();
+	UFUNCTION()
+	void GeneratePerceptionParts();
 };
