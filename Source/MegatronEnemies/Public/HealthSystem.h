@@ -8,6 +8,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnDeath);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHealthChanged, double, Health);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMaxHealthChange, double, MaxHealth);
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class MEGATRONENEMIES_API UHealthSystem : public UActorComponent
@@ -30,16 +31,16 @@ public:
 	double GetHealth() const { return Health; }
 
 	UFUNCTION(BlueprintSetter)
-	void SetHealth(double const NewHealth) { Health = NewHealth; }
+	void SetHealth(double const NewHealth);
 
 	UFUNCTION(BlueprintGetter)
 	double GetMaxHealth() const { return MaxHealth; }
 
 	UFUNCTION(BlueprintSetter)
-	void SetMaxHealth(double const NewMaxHealth) { MaxHealth = NewMaxHealth; }
+	void SetMaxHealth(double const NewMaxHealth);
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Health")
-	bool IsDead() const;
+	bool IsDead() const {return Health <= 0;}
 
 	//UFUNCTION(BlueprintCallable, Category="Health")
 	//void TakeDamage(double DamageTaken, AActor* DamageSource);
@@ -62,5 +63,7 @@ public:
 
 	UPROPERTY(BlueprintAssignable, Category= "Health")
 	FOnHealthChanged OnHealthChanged;
-	
+
+	UPROPERTY(BlueprintAssignable, Category= "MaxHealth")
+	FOnMaxHealthChange OnMaxHealthChanged;
 };

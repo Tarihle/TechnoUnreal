@@ -30,6 +30,14 @@ void UHealthSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	// ...
 }
 
+void UHealthSystem::SetHealth(double const NewHealth)
+{
+	Health = FMath::Clamp(NewHealth, 0.0, MaxHealth);
+
+	if (IsDead())
+		OnDeath.Broadcast();
+}
+
 /*void UHealthSystem::TakeDamage(double DamageTaken, AActor* DamageSource)
 {
 	SetHealth(FMath::Clamp(GetHealth() - DamageTaken, 0.0f, GetMaxHealth()));
@@ -37,12 +45,11 @@ void UHealthSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	if (IsDead()) OnDeath.Broadcast();
 }*/
 
-bool UHealthSystem::IsDead() const
+void UHealthSystem::SetMaxHealth(double const NewMaxHealth)
 {
-	if (Health > 0.0f) return false;
-	
-	OnDeath.Broadcast();
-	return true;
+	MaxHealth = NewMaxHealth;
+
+	OnMaxHealthChanged.Broadcast(MaxHealth);
 }
 
 void UHealthSystem::Heal(double HealAmount, AActor* HealSource)
