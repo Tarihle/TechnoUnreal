@@ -38,51 +38,35 @@ class MEGATRONENEMIES_API ULocomotionPart : public UBodyPart
 
 public:
 
-	// TODO: move these to body for centralized logic
-	// Setting walk speed, calling jump, etc would be hell from
-	// individual legs
+	ULocomotionPart();
 
-	//UFUNCTION(BlueprintNativeEvent)
-	//void Walk();
+	UFUNCTION(BlueprintCallable)
+	float GetBaseSpeed()			const;
 
-	//UFUNCTION(BlueprintNativeEvent)
-	//void StopWalking();
+	UFUNCTION(BlueprintCallable)
+	float GetSprintMultiplier()		const;
 
-	//UFUNCTION(BlueprintNativeEvent)
-	//void Sprint();
+	UFUNCTION(BlueprintCallable)
+	float GetJumpForce()			const;
 
-	//UFUNCTION(BlueprintNativeEvent)
-	//void StopSprinting();
-
-	//UFUNCTION(BlueprintNativeEvent)
-	//void Jump();
-
-	//UFUNCTION(BlueprintNativeEvent)
-	//void StopJumping();
-
-	//UFUNCTION(BlueprintNativeEvent)
-	//void Crouch();
-
-
-	//UFUNCTION(BlueprintNativeEvent)
-	//void StopCrouching();
+	UFUNCTION(BlueprintCallable)
+	float GetCrouchMultiplier()		const;
 
 
 // TODO: Cut tooltip into several lines if possible
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement", meta = (ToolTip = "What each instance of this part will add to the attached character's movement speed. 2 legs will have this value x2"))
-	float	HalfWalkSpeed = 450.f;
+	float	BaseSpeed = 450.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float	SprintMultiplier = 1.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float JumpForce = 200.f;
+	float	JumpForce = 200.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
-	float CrouchMultiplier = 0.5f;
-
+	float	CrouchMultiplier = 0.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	FMovementConstraints Constraints;
