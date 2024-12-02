@@ -6,6 +6,57 @@
 #include "BodyPart.h"
 #include "ConnectorPart.generated.h"
 
+/* I've tried to use unions to have a single struct but without success because I suck at my job and everything I do, */
+/* So if you manage to make it work, congrats *slow claps* */
+USTRUCT(BlueprintType)
+struct FIndividualInteraction
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
+	FComponentReference MeshReference;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UInteractionPart> DefaultInteractionPart;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UPossibleBodyParts> PossibleInteractions;
+
+	FIndividualInteraction();
+};
+USTRUCT(BlueprintType)
+struct FIndividualLocomotion
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
+	FComponentReference MeshReference;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class ULocomotionPart> DefaultLocomotionPart;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UPossibleBodyParts> PossibleLocomotions;
+
+	FIndividualLocomotion();
+};
+USTRUCT(BlueprintType)
+struct FIndividualPerception
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
+	FComponentReference MeshReference;
+
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UPerceptionPart> DefaultPerceptionPart;
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UPossibleBodyParts> PossiblePerceptions;
+
+	FIndividualPerception();
+};
+
 /**
  *
  */
@@ -18,13 +69,32 @@ public:
 
 	UConnectorPart();
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Parts")
-	TArray<class ULocomotionPart*>  LocomotionParts;
+protected:
+	TObjectPtr<class ACharacter> CharacterOwnerRef;
 
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Parts")
-	//TArray<class UPerceptionPart*>  PerceptionParts;
+	TArray<class USkeletalMesh*> PossibleMeshes;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Parts")
-	TArray<class UInteractionPart*> InteractionParts;
+	UPROPERTY(EditAnywhere, meta = (InlineEditConditionToggle))
+	bool bUseInteraction = false;
+	UPROPERTY(EditAnywhere, meta = (InlineEditConditionToggle))
+	bool bUseLocomotion = false;
+	UPROPERTY(EditAnywhere, meta = (InlineEditConditionToggle))
+	bool bUsePerception = false;
 
+	UPROPERTY(EditAnywhere/*, BlueprintReadWrite*/, Category = BodyParts, meta = (EditCondition = "bUseInteraction"))
+	TArray<FIndividualInteraction> InteractionParts;
+	UPROPERTY(EditAnywhere/*, BlueprintReadWrite*/, Category = BodyParts, meta = (EditCondition = "bUseLocomotion"))
+	TArray<FIndividualLocomotion>  LocomotionParts;	
+	UPROPERTY(EditAnywhere/*, BlueprintReadWrite*/, Category = BodyParts, meta = (EditCondition = "bUsePerception"))
+	TArray<FIndividualPerception>  PerceptionParts;
+
+	void BeginPlay() override;
+	
+	/* These functions are basically the same, we separate them for usability and because we have 3 different "IndividualPart" structs */
+	UFUNCTION()
+	void GenerateInteractionParts();
+	UFUNCTION()
+	void GenerateLocomotionParts();
+	UFUNCTION()
+	void GeneratePerceptionParts();
 };
