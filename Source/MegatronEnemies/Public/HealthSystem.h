@@ -39,10 +39,10 @@ public:
 	void SetMaxHealth(double const NewMaxHealth) { MaxHealth = NewMaxHealth; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category="Health")
-	bool IsDead() const { return Health <= 0.0f; }
+	bool IsDead() const;
 
-	UFUNCTION(BlueprintCallable, Category="Health")
-	void TakeDamage(double DamageTaken, AActor* DamageSource);
+	//UFUNCTION(BlueprintCallable, Category="Health")
+	//void TakeDamage(double DamageTaken, AActor* DamageSource);
 
 	UFUNCTION(BlueprintCallable, Category="Health")
 	void Heal(double HealAmount, AActor* HealSource = nullptr);

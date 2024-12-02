@@ -30,11 +30,19 @@ void UHealthSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	// ...
 }
 
-void UHealthSystem::TakeDamage(double DamageTaken, AActor* DamageSource)
+/*void UHealthSystem::TakeDamage(double DamageTaken, AActor* DamageSource)
 {
 	SetHealth(FMath::Clamp(GetHealth() - DamageTaken, 0.0f, GetMaxHealth()));
 	OnHealthChanged.Broadcast(GetHealth());
 	if (IsDead()) OnDeath.Broadcast();
+}*/
+
+bool UHealthSystem::IsDead() const
+{
+	if (Health > 0.0f) return false;
+	
+	OnDeath.Broadcast();
+	return true;
 }
 
 void UHealthSystem::Heal(double HealAmount, AActor* HealSource)
