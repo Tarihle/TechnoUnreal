@@ -30,6 +30,8 @@ protected:
 	float			LocalHealth = 0.f;
 	EBodyPartType	Type = EBodyPartType::INVALID;
 
+	virtual void BeginPlay() override;
+
 public:
 	UBodyPart();
 
