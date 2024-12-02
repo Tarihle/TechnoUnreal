@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/SkeletalMeshComponent.h"
+#include "GameplayTagContainer.h"
 #include "BodyPart.generated.h"
 
 
@@ -17,6 +18,16 @@ enum class EBodyPartType : uint8
 	PERCEPTION
 };
 
+USTRUCT(BlueprintType)
+struct FActionIndex
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<class UMegatronTask>    Class;
+	int32								Index;
+};
+
 /**
  *
  */
@@ -26,15 +37,30 @@ class MEGATRONENEMIES_API UBodyPart : public USkeletalMeshComponent
 	GENERATED_BODY()
 
 protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Behavior")
+	TMap<FGameplayTag, FActionIndex>		ActionMap;
+
+	TArray<class UMegatronTask*>			Actions;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stats)
 	float			LocalHealth = 0.f;
-	EBodyPartType	Type = EBodyPartType::INVALID;
+
+	EBodyPartType					Type = EBodyPartType::INVALID;
+
+protected:
+
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	virtual void BeginPlay() override;
 
 public:
 	UBodyPart();
 	virtual void InitializeComponent() override;
+
+	UFUNCTION(BlueprintPure, meta = (Tooltip = "Get action from Gameplay Tag as specified in ActionMap. Returns Null on failure"))
+	class UMegatronTask* GetTask(FGameplayTag Tag);
+
 
 	static bool IsInteraction(UBodyPart* Part);
 	static bool IsConnector(UBodyPart* Part);
