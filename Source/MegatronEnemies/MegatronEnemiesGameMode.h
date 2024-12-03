@@ -11,9 +11,6 @@ class AMegatronEnemiesGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
-public:
+  public:
 	AMegatronEnemiesGameMode();
 };
-
-
-

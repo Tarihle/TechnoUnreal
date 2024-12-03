@@ -2,7 +2,6 @@
 
 #include "InteractionPart.h"
 
-
 UInteractionPart::UInteractionPart()
 {
 	Type = EBodyPartType::INTERACTION;
@@ -17,7 +16,6 @@ void UInteractionPart::StopAction_Implementation()
 {
 	bIsExecutingAction = false;
 }
-
 
 bool UInteractionPart::IsExecutingAction() const
 {
