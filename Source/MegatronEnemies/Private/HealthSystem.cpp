@@ -17,7 +17,8 @@ void UHealthSystem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	if (Health == 0)
+		Health = MaxHealth;
 	
 }
 
@@ -34,6 +35,8 @@ void UHealthSystem::SetHealth(double const NewHealth)
 {
 	Health = FMath::Clamp(NewHealth, 0.0, MaxHealth);
 
+	OnHealthChanged.Broadcast(GetHealth());
+	
 	if (IsDead())
 		OnDeath.Broadcast();
 }
