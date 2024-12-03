@@ -28,6 +28,9 @@ EMegatronTaskStatus UMegatronTask::GetStatus() const
 
 void UMegatronTask::Finish(bool bSuccess)
 {
+	if (EMegatronTaskStatus::IN_PROGRESS != Status)
+		return;
+
 	if (bSuccess)
 	{
 		Status = EMegatronTaskStatus::COMPLETED;
