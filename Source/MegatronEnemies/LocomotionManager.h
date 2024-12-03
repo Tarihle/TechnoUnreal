@@ -45,6 +45,9 @@ public:
 
 	void AddArrayElement(ULocomotionPart* const& ChosenElement);
 
+	void OnConnectorInitialized();
+	void SetConnectorCount(int32 Count);
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -58,6 +61,9 @@ private:
 	float	GlobalSprintMultiplier = 1.f;
 	float	AverageCrouchMultiplier = 0.f;
 	float   GlobalJumpForce = 0.f;
+
+	int32   InitializedConnectorCount = 0;
+	int32   ConnectorCount = 0;
 
 	bool	bCanEverCrouch  = true;
 	bool	bCanEverJump    = true;

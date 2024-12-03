@@ -32,6 +32,10 @@ void ULocomotionManager::Initialize(/*const TArray<class UConnectorPart*>& Conne
 			FMovementConstraints& Constraints = Leg->GetMovementConstraints();
 
 			++LegCount;
+			bCanEverWalk &= Constraints.bCanWalk;
+			bCanEverCrouch &= Constraints.bCanCrouch;
+			bCanEverJump &= Constraints.bCanJump;
+			bCanEverSprint &= Constraints.bCanSprint;
 
 			if (Constraints.bCanJump)
 				GlobalJumpForce += Leg->GetJumpForce();
@@ -46,12 +50,6 @@ void ULocomotionManager::Initialize(/*const TArray<class UConnectorPart*>& Conne
 
 			if (Constraints.bCanCrouch)
 				AverageCrouchMultiplier += Leg->GetCrouchMultiplier();
-
-			bCanEverCrouch &= Constraints.bCanCrouch;
-			bCanEverJump &= Constraints.bCanJump;
-			bCanEverSprint &= Constraints.bCanSprint;
-			bCanEverWalk &= Constraints.bCanWalk;
-
 		}
 	//}
 
@@ -85,6 +83,17 @@ void ULocomotionManager::AddArrayElement(ULocomotionPart* const& ChosenElement)
 	ChosenLocomotionArray.Add(ChosenElement);
 }
 
+void ULocomotionManager::OnConnectorInitialized()
+{
+	if (++InitializedConnectorCount == ConnectorCount)
+		Initialize();
+}
+
+void ULocomotionManager::SetConnectorCount(int32 Count)
+{
+	ConnectorCount = Count;
+}
+
 // Called when the game starts
 void ULocomotionManager::BeginPlay()
 {
@@ -108,6 +117,11 @@ void ULocomotionManager::OnPartDestroyed(ULocomotionPart* Part)
 	GlobalWalkSpeed -= Part->GetBaseSpeed();
 	GlobalSprintMultiplier /= Part->GetSprintMultiplier();
 	GlobalJumpForce -= Part->GetJumpForce();
+
+	UCharacterMovementComponent* Movement = OwnerCharacter->GetCharacterMovement();
+
+	Movement->JumpZVelocity = GlobalJumpForce;
+	Movement->MaxWalkSpeed = GlobalWalkSpeed;
 
 }
 

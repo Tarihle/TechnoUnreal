@@ -2,14 +2,30 @@
 
 
 #include "BodyPart.h"
+#include "MegatronTask.h"
+#include "UObject/Class.h"
 
 void UBodyPart::BeginPlay()
 {
 	Super::BeginPlay();
+	for (auto& ActionTuple : ActionMap)
+	{
+		ActionTuple.Value.Index =
+		Actions.Add(NewObject<UMegatronTask>(this, ActionTuple.Value.Class));
+	}
 }
+
 
 UBodyPart::UBodyPart()
 {
+}
+
+UMegatronTask* UBodyPart::GetTask(FGameplayTag Tag)
+{
+	if (ActionMap.Contains(Tag))
+		return Actions[ActionMap.Find(Tag)->Index];
+
+	else return nullptr;
 }
 
 void UBodyPart::InitializeComponent()
@@ -26,6 +42,14 @@ bool UBodyPart::IsLocomotion(UBodyPart* Part)
 bool UBodyPart::IsConnector(UBodyPart* Part)
 {
 	return Part->Type == EBodyPartType::CONNECTOR;
+}
+
+void UBodyPart::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	for (UMegatronTask* Task : Actions)
+		Task->InternalTick(DeltaTime);
 }
 
 bool UBodyPart::IsInteraction(UBodyPart* Part)

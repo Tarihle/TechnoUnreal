@@ -23,9 +23,7 @@ UMegatronManager::UMegatronManager()
 void UMegatronManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-	LocomotionManager->Initialize(/*Connectors*/);
-
+	LocomotionManager->SetConnectorCount(Connectors.Num());
 }
 
 
