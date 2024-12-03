@@ -33,7 +33,7 @@ void UHealthSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 
 void UHealthSystem::SetHealth(double const NewHealth)
 {
-	Health = FMath::Clamp(NewHealth, 0.0, MaxHealth);
+	Health = FMath::Clamp(NewHealth, 0.0, GetMaxHealth());
 
 	OnHealthChanged.Broadcast(GetHealth());
 	
@@ -52,7 +52,7 @@ void UHealthSystem::SetMaxHealth(double const NewMaxHealth)
 {
 	MaxHealth = NewMaxHealth;
 
-	OnMaxHealthChanged.Broadcast(MaxHealth);
+	OnMaxHealthChanged.Broadcast(GetMaxHealth());
 }
 
 void UHealthSystem::Heal(double HealAmount, AActor* HealSource)
