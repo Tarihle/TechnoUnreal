@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ConnectorPart.h"
-#include "PossibleBodyParts.h"
+
 #include "InteractionPart.h"
-#include "LocomotionPart.h"
-#include "PerceptionPart.h"
-#include "MegatronManager.h"
 #include "LocomotionManager.h"
+#include "LocomotionPart.h"
+#include "MegatronManager.h"
+#include "PerceptionPart.h"
+#include "PossibleBodyParts.h"
 
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
@@ -52,7 +52,8 @@ void UConnectorPart::GenerateInteractionParts()
 	{
 		for (int i = 0; i < InteractionParts.Num(); i++)
 		{
-			USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(InteractionParts[i].MeshReference.GetComponent(OwnerCharacter));
+			USkeletalMeshComponent* Ref =
+				Cast<USkeletalMeshComponent>(InteractionParts[i].MeshReference.GetComponent(OwnerCharacter));
 			if (!Ref)
 			{
 				UE_LOG(LogTemp, Error, TEXT("No Ref"));
@@ -83,7 +84,8 @@ void UConnectorPart::GenerateLocomotionParts()
 	{
 		for (int i = 0; i < LocomotionParts.Num(); i++)
 		{
-			USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(LocomotionParts[i].MeshReference.GetComponent(OwnerCharacter));
+			USkeletalMeshComponent* Ref =
+				Cast<USkeletalMeshComponent>(LocomotionParts[i].MeshReference.GetComponent(OwnerCharacter));
 			if (!Ref)
 			{
 				UE_LOG(LogTemp, Error, TEXT("No Ref"));
@@ -101,7 +103,6 @@ void UConnectorPart::GenerateLocomotionParts()
 				Ref->SetSkeletalMesh(LocomotionParts[i].PossibleLocomotions->GetPartArray()[Index]->SkeletalMesh);
 				ULocomotionPart* CastPart = Cast<ULocomotionPart>(LocomotionParts[i].PossibleLocomotions->GetPartArray()[Index]);
 				LocomotionManagerRef->AddArrayElement(CastPart);
-
 			}
 			else
 			{
@@ -118,7 +119,8 @@ void UConnectorPart::GeneratePerceptionParts()
 	{
 		for (int i = 0; i < PerceptionParts.Num(); i++)
 		{
-			USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(PerceptionParts[i].MeshReference.GetComponent(OwnerCharacter));
+			USkeletalMeshComponent* Ref =
+				Cast<USkeletalMeshComponent>(PerceptionParts[i].MeshReference.GetComponent(OwnerCharacter));
 			if (!Ref)
 			{
 				UE_LOG(LogTemp, Error, TEXT("No Ref"));

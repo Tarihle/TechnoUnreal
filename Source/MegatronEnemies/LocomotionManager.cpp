@@ -1,13 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "LocomotionManager.h"
 
 #include "ConnectorPart.h"
 #include "LocomotionPart.h"
+
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
 
 // Sets default values for this component's properties
 ULocomotionManager::ULocomotionManager()
@@ -25,32 +24,32 @@ void ULocomotionManager::Initialize(/*const TArray<class UConnectorPart*>& Conne
 
 	float LegCount = 0;
 
-	//for (UConnectorPart* Trunk : Connectors)
+	// for (UConnectorPart* Trunk : Connectors)
 	//{
-		for (ULocomotionPart* Leg : ChosenLocomotionArray)
-		{
-			FMovementConstraints& Constraints = Leg->GetMovementConstraints();
+	for (ULocomotionPart* Leg : ChosenLocomotionArray)
+	{
+		FMovementConstraints& Constraints = Leg->GetMovementConstraints();
 
-			++LegCount;
-			bCanEverWalk &= Constraints.bCanWalk;
-			bCanEverCrouch &= Constraints.bCanCrouch;
-			bCanEverJump &= Constraints.bCanJump;
-			bCanEverSprint &= Constraints.bCanSprint;
+		++LegCount;
+		bCanEverWalk &= Constraints.bCanWalk;
+		bCanEverCrouch &= Constraints.bCanCrouch;
+		bCanEverJump &= Constraints.bCanJump;
+		bCanEverSprint &= Constraints.bCanSprint;
 
-			if (Constraints.bCanJump)
-				GlobalJumpForce += Leg->GetJumpForce();
+		if (Constraints.bCanJump)
+			GlobalJumpForce += Leg->GetJumpForce();
 
-			if (!Constraints.bCanWalk)
-				continue;
+		if (!Constraints.bCanWalk)
+			continue;
 
-			GlobalWalkSpeed += Leg->GetBaseSpeed();
+		GlobalWalkSpeed += Leg->GetBaseSpeed();
 
-			if (Constraints.bCanSprint)
-				GlobalSprintMultiplier *= Leg->GetSprintMultiplier();
+		if (Constraints.bCanSprint)
+			GlobalSprintMultiplier *= Leg->GetSprintMultiplier();
 
-			if (Constraints.bCanCrouch)
-				AverageCrouchMultiplier += Leg->GetCrouchMultiplier();
-		}
+		if (Constraints.bCanCrouch)
+			AverageCrouchMultiplier += Leg->GetCrouchMultiplier();
+	}
 	//}
 
 	if (!bCanEverWalk)
@@ -65,7 +64,6 @@ void ULocomotionManager::Initialize(/*const TArray<class UConnectorPart*>& Conne
 	Movement->MaxWalkSpeed = GlobalWalkSpeed;
 	Movement->MaxWalkSpeedCrouched = GlobalWalkSpeed * AverageCrouchMultiplier;
 }
-
 
 void ULocomotionManager::Jump()
 {
@@ -100,9 +98,7 @@ void ULocomotionManager::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
-
 }
-
 
 // Called every frame
 void ULocomotionManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -122,7 +118,6 @@ void ULocomotionManager::OnPartDestroyed(ULocomotionPart* Part)
 
 	Movement->JumpZVelocity = GlobalJumpForce;
 	Movement->MaxWalkSpeed = GlobalWalkSpeed;
-
 }
 
 void ULocomotionManager::Sprint()
@@ -146,4 +141,3 @@ void ULocomotionManager::StopCrouching()
 {
 	OwnerCharacter->UnCrouch();
 }
-

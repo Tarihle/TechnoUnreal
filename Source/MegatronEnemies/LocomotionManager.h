@@ -6,19 +6,16 @@
 #include "Components/ActorComponent.h"
 #include "LocomotionManager.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class MEGATRONENEMIES_API ULocomotionManager : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
+  public:
 	// Sets default values for this component's properties
 	ULocomotionManager();
 
-
 	void Initialize(/*const TArray<class UConnectorPart*>& Connectors*/);
-
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
@@ -48,25 +45,24 @@ public:
 	void OnConnectorInitialized();
 	void SetConnectorCount(int32 Count);
 
-protected:
+  protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	TObjectPtr<class ACharacter>	OwnerCharacter;
-	TArray<class ULocomotionPart*>	ChosenLocomotionArray;
+	TObjectPtr<class ACharacter>   OwnerCharacter;
+	TArray<class ULocomotionPart*> ChosenLocomotionArray;
 
-private:
+  private:
+	float GlobalWalkSpeed = 0.f;
+	float GlobalSprintMultiplier = 1.f;
+	float AverageCrouchMultiplier = 0.f;
+	float GlobalJumpForce = 0.f;
 
-	float	GlobalWalkSpeed = 0.f;
-	float	GlobalSprintMultiplier = 1.f;
-	float	AverageCrouchMultiplier = 0.f;
-	float   GlobalJumpForce = 0.f;
+	int32 InitializedConnectorCount = 0;
+	int32 ConnectorCount = 0;
 
-	int32   InitializedConnectorCount = 0;
-	int32   ConnectorCount = 0;
-
-	bool	bCanEverCrouch  = true;
-	bool	bCanEverJump    = true;
-	bool	bCanEverSprint  = true;
-	bool	bCanEverWalk    = true;
+	bool bCanEverCrouch = true;
+	bool bCanEverJump = true;
+	bool bCanEverSprint = true;
+	bool bCanEverWalk = true;
 };
