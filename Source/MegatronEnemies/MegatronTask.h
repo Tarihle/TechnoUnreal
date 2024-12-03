@@ -63,13 +63,13 @@ private:
 
 public:
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FTaskCompletedSignature		OnTaskSuccess;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FTaskAbortedSignature		OnTaskAbort;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FTaskFailedSignature		OnTaskFailure;
 
 protected:
