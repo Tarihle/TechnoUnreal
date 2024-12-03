@@ -1,6 +1,10 @@
 # Visual Studio 2015 user specific files
 .vs/
 
+#formatting/tidying
+*.clang-format
+*.clang-tidy
+
 # Temporary files
 Temp.txt
 enc_temp_folder/

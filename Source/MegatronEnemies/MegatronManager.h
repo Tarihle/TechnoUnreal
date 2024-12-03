@@ -6,13 +6,12 @@
 #include "Components/ActorComponent.h"
 #include "MegatronManager.generated.h"
 
-
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class MEGATRONENEMIES_API UMegatronManager : public UActorComponent
 {
 	GENERATED_BODY()
 
-public:
+  public:
 	// Sets default values for this component's properties
 	UMegatronManager();
 
@@ -20,35 +19,31 @@ public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintPure)
-	class UInteractionManager*		GetInteraction();
+	class UInteractionManager* GetInteraction();
 
 	UFUNCTION(BlueprintPure)
-	class ULocomotionManager*		GetLocomotion();
+	class ULocomotionManager* GetLocomotion();
 
 	UFUNCTION(BlueprintPure)
-	class UPerceptionManager*		GetPerception();
+	class UPerceptionManager* GetPerception();
 
-
-protected:
+  protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-private:
-
-	TObjectPtr<class UInteractionManager>	InteractionManager;
-	TObjectPtr<class ULocomotionManager>	LocomotionManager;
-	TObjectPtr<class UPerceptionManager>	PerceptionManager;
+  private:
+	TObjectPtr<class UInteractionManager> InteractionManager;
+	TObjectPtr<class ULocomotionManager>  LocomotionManager;
+	TObjectPtr<class UPerceptionManager>  PerceptionManager;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Megatron", meta = (AllowPrivateAccess = "true"))
-	TArray<class UConnectorPart*>	Connectors;
+	TArray<class UConnectorPart*> Connectors;
 
 	// TODO: add possible connectors
 
-	float	MaxHealth = 0.f;
+	float MaxHealth = 0.f;
 
-protected:
-
+  protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Megatron")
-	int32	CharacterLevel = 1;
-
+	int32 CharacterLevel = 1;
 };

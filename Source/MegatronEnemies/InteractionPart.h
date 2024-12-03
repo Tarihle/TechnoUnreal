@@ -14,8 +14,7 @@ class MEGATRONENEMIES_API UInteractionPart : public UBodyPart
 {
 	GENERATED_BODY()
 
-public:
-
+  public:
 	UInteractionPart();
 
 	UFUNCTION(BlueprintNativeEvent)
@@ -27,8 +26,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsExecutingAction() const;
 
-protected:
-
+  protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	float AttackDamage = 1.f;
 
@@ -38,8 +36,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Interaction")
 	float ActionSpeedIncrement = 0.f;
 
-
-private:
-
+  private:
 	bool bIsExecutingAction = false;
 };

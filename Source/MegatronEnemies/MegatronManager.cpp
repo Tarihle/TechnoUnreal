@@ -1,9 +1,9 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "MegatronManager.h"
-#include "LocomotionManager.h"
+
 #include "InteractionManager.h"
+#include "LocomotionManager.h"
 #include "PerceptionManager.h"
 
 // Sets default values for this component's properties
@@ -18,16 +18,12 @@ UMegatronManager::UMegatronManager()
 	PerceptionManager = CreateDefaultSubobject<UPerceptionManager>(TEXT("PerceptionManager"));
 }
 
-
 // Called when the game starts
 void UMegatronManager::BeginPlay()
 {
 	Super::BeginPlay();
-
-	LocomotionManager->Initialize(/*Connectors*/);
-
+	LocomotionManager->SetConnectorCount(Connectors.Num());
 }
-
 
 // Called every frame
 void UMegatronManager::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -51,4 +47,3 @@ UPerceptionManager* UMegatronManager::GetPerception()
 {
 	return PerceptionManager;
 }
-

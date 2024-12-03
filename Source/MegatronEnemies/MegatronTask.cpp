@@ -9,10 +9,10 @@ void UMegatronTask::Execute_Implementation()
 	Status = EMegatronTaskStatus::IN_PROGRESS;
 }
 
-void UMegatronTask::Tick_Implementation(float DeltaSeconds)
-{
-	// Empty for parent class
-}
+//void UMegatronTask::Tick_Implementation(float DeltaSeconds)
+//{
+//	// Empty for parent class
+//}
 
 void UMegatronTask::Abort()
 {

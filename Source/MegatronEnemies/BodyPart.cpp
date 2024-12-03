@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "BodyPart.h"
+
 #include "MegatronTask.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "UObject/Class.h"
@@ -11,11 +11,9 @@ void UBodyPart::BeginPlay()
 	Super::BeginPlay();
 	for (auto& ActionTuple : ActionMap)
 	{
-		ActionTuple.Value.Index =
-		Actions.Add(NewObject<UMegatronTask>(this, ActionTuple.Value.Class));
+		ActionTuple.Value.Index = Actions.Add(NewObject<UMegatronTask>(this, ActionTuple.Value.Class));
 	}
 }
-
 
 UBodyPart::UBodyPart()
 {
@@ -38,14 +36,30 @@ Ignore this error if you are compiling a Blueprint"),
 	else if (ActionMap.Contains(Tag))
 		return Actions[ActionMap.Find(Tag)->Index];
 
-	else return nullptr;
+	else
+		return nullptr;
+}
+
+bool UBodyPart::HasTaskByTag(FGameplayTag Tag)
+{
+	return ActionMap.Contains(Tag);
+}
+
+bool UBodyPart::HasTaskByClass(TSubclassOf<class UMegatronTask> Class)
+{
+	for (const auto& Task : ActionMap)
+	{
+		if (Task.Value.Class == Class)
+			return true;
+	}
+
+	return false;
 }
 
 void UBodyPart::InitializeComponent()
 {
 	Super::InitializeComponent();
 }
-
 
 bool UBodyPart::IsLocomotion(UBodyPart* Part)
 {
@@ -60,6 +74,11 @@ bool UBodyPart::IsConnector(UBodyPart* Part)
 void UBodyPart::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	FString Message = UKismetSystemLibrary::GetDisplayName(this) + TEXT(" tick");
+
+	if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 0.3f, FColor::Yellow, Message);
 
 	for (UMegatronTask* Task : Actions)
 		Task->InternalTick(DeltaTime);

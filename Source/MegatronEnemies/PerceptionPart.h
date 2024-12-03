@@ -7,11 +7,10 @@
 #include "PerceptionPart.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class MEGATRONENEMIES_API UPerceptionPart : public UBodyPart
 {
 	GENERATED_BODY()
-	
 };

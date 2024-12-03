@@ -45,7 +45,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Execute();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintImplementableEvent)
 	void Tick(float DeltaSeconds);
 
 	UFUNCTION(BlueprintCallable)

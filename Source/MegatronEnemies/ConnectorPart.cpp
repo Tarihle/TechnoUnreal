@@ -1,13 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "ConnectorPart.h"
-#include "PossibleBodyParts.h"
+
 #include "InteractionPart.h"
-#include "LocomotionPart.h"
-#include "PerceptionPart.h"
-#include "MegatronManager.h"
 #include "LocomotionManager.h"
+#include "LocomotionPart.h"
+#include "MegatronManager.h"
+#include "PerceptionPart.h"
+#include "PossibleBodyParts.h"
 
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
@@ -22,7 +22,7 @@ void UConnectorPart::InitializeComponent()
 	Super::InitializeComponent();
 
 	OwnerCharacter = Cast<ACharacter>(GetOwner());
-	
+
 	if (OwnerCharacter->GetComponentByClass<UMegatronManager>())
 	{
 		LocomotionManagerRef = OwnerCharacter->GetComponentByClass<UMegatronManager>()->GetLocomotion();
@@ -42,6 +42,8 @@ void UConnectorPart::BeginPlay()
 	GenerateInteractionParts();
 	GenerateLocomotionParts();
 	GeneratePerceptionParts();
+
+	LocomotionManagerRef->OnConnectorInitialized();
 }
 
 void UConnectorPart::GenerateInteractionParts()
@@ -50,13 +52,14 @@ void UConnectorPart::GenerateInteractionParts()
 	{
 		for (int i = 0; i < InteractionParts.Num(); i++)
 		{
-			USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(InteractionParts[i].MeshReference.GetComponent(OwnerCharacter));
+			USkeletalMeshComponent* Ref =
+				Cast<USkeletalMeshComponent>(InteractionParts[i].MeshReference.GetComponent(OwnerCharacter));
 			if (!Ref)
 			{
 				UE_LOG(LogTemp, Error, TEXT("No Ref"));
 			}
 
-			if (InteractionParts[i].DefaultInteractionPart)
+			else if (InteractionParts[i].DefaultInteractionPart)
 			{
 				Ref->SetSkeletalMesh(InteractionParts[i].DefaultInteractionPart->SkeletalMesh);
 			}
@@ -81,13 +84,14 @@ void UConnectorPart::GenerateLocomotionParts()
 	{
 		for (int i = 0; i < LocomotionParts.Num(); i++)
 		{
-			USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(LocomotionParts[i].MeshReference.GetComponent(OwnerCharacter));
+			USkeletalMeshComponent* Ref =
+				Cast<USkeletalMeshComponent>(LocomotionParts[i].MeshReference.GetComponent(OwnerCharacter));
 			if (!Ref)
 			{
 				UE_LOG(LogTemp, Error, TEXT("No Ref"));
 			}
 
-			if (LocomotionParts[i].DefaultLocomotionPart)
+			else if (LocomotionParts[i].DefaultLocomotionPart)
 			{
 				Ref->SetSkeletalMesh(LocomotionParts[i].DefaultLocomotionPart->SkeletalMesh);
 				LocomotionManagerRef->AddArrayElement(LocomotionParts[i].DefaultLocomotionPart);
@@ -99,7 +103,6 @@ void UConnectorPart::GenerateLocomotionParts()
 				Ref->SetSkeletalMesh(LocomotionParts[i].PossibleLocomotions->GetPartArray()[Index]->SkeletalMesh);
 				ULocomotionPart* CastPart = Cast<ULocomotionPart>(LocomotionParts[i].PossibleLocomotions->GetPartArray()[Index]);
 				LocomotionManagerRef->AddArrayElement(CastPart);
-
 			}
 			else
 			{
@@ -116,13 +119,14 @@ void UConnectorPart::GeneratePerceptionParts()
 	{
 		for (int i = 0; i < PerceptionParts.Num(); i++)
 		{
-			USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(PerceptionParts[i].MeshReference.GetComponent(OwnerCharacter));
+			USkeletalMeshComponent* Ref =
+				Cast<USkeletalMeshComponent>(PerceptionParts[i].MeshReference.GetComponent(OwnerCharacter));
 			if (!Ref)
 			{
 				UE_LOG(LogTemp, Error, TEXT("No Ref"));
 			}
 
-			if (PerceptionParts[i].DefaultPerceptionPart)
+			else if (PerceptionParts[i].DefaultPerceptionPart)
 			{
 				Ref->SetSkeletalMesh(PerceptionParts[i].DefaultPerceptionPart->SkeletalMesh);
 			}

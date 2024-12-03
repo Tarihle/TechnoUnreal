@@ -13,8 +13,8 @@ struct FIndividualInteraction
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
+  public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
 	FComponentReference MeshReference;
 
 	UPROPERTY(EditAnywhere)
@@ -30,8 +30,8 @@ struct FIndividualLocomotion
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
+  public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
 	FComponentReference MeshReference;
 
 	UPROPERTY(EditAnywhere)
@@ -47,8 +47,8 @@ struct FIndividualPerception
 {
 	GENERATED_BODY()
 
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
+  public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
 	FComponentReference MeshReference;
 
 	UPROPERTY(EditAnywhere)
@@ -67,13 +67,13 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 {
 	GENERATED_BODY()
 
-public:
-
+  public:
 	UConnectorPart();
 	void InitializeComponent() override;
 
-protected:
+  protected:
 	TObjectPtr<class ACharacter> OwnerCharacter;
+	TObjectPtr<class ULocomotionManager> LocomotionManagerRef;
 
 	TArray<class USkeletalMesh*> PossibleMeshes;
 
@@ -84,18 +84,17 @@ protected:
 	UPROPERTY(EditAnywhere, meta = (InlineEditConditionToggle))
 	bool bUsePerception = false;
 
-	UPROPERTY(EditAnywhere/*, BlueprintReadWrite*/, Category = BodyParts, meta = (EditCondition = "bUseInteraction"))
+	UPROPERTY(EditAnywhere , BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUseInteraction"))
 	TArray<FIndividualInteraction> InteractionParts;
-	UPROPERTY(EditAnywhere/*, BlueprintReadWrite*/, Category = BodyParts, meta = (EditCondition = "bUseLocomotion"))
-	TArray<FIndividualLocomotion>  LocomotionParts;	
-	UPROPERTY(EditAnywhere/*, BlueprintReadWrite*/, Category = BodyParts, meta = (EditCondition = "bUsePerception"))
-	TArray<FIndividualPerception>  PerceptionParts;
-
-	TObjectPtr<class ULocomotionManager> LocomotionManagerRef;
+	UPROPERTY(EditAnywhere , BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUseLocomotion"))
+	TArray<FIndividualLocomotion> LocomotionParts;
+	UPROPERTY(EditAnywhere , BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUsePerception"))
+	TArray<FIndividualPerception> PerceptionParts;
 
 	void BeginPlay() override;
-	
-	/* These functions are basically the same, we separate them for usability and because we have 3 different "IndividualPart" structs */
+
+	/* These functions are basically the same, we separate them for usability and because we have 3 different
+	 * "IndividualPart" structs */
 	UFUNCTION()
 	void GenerateInteractionParts();
 	UFUNCTION()
