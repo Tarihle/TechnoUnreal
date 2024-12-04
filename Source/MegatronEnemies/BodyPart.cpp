@@ -75,11 +75,6 @@ void UBodyPart::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FString Message = UKismetSystemLibrary::GetDisplayName(this) + TEXT(" tick");
-
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 0.3f, FColor::Yellow, Message);
-
 	for (UMegatronTask* Task : Actions)
 		Task->InternalTick(DeltaTime);
 }
