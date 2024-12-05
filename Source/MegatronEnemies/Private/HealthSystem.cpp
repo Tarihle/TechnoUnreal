@@ -17,7 +17,8 @@ void UHealthSystem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	if (Health == 0)
+		Health = MaxHealth;
 	
 }
 
@@ -30,11 +31,28 @@ void UHealthSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorCo
 	// ...
 }
 
-void UHealthSystem::TakeDamage(double DamageTaken, AActor* DamageSource)
+void UHealthSystem::SetHealth(double const NewHealth)
+{
+	Health = FMath::Clamp(NewHealth, 0.0, GetMaxHealth());
+
+	OnHealthChanged.Broadcast(GetHealth());
+	
+	if (IsDead())
+		OnDeath.Broadcast();
+}
+
+/*void UHealthSystem::TakeDamage(double DamageTaken, AActor* DamageSource)
 {
 	SetHealth(FMath::Clamp(GetHealth() - DamageTaken, 0.0f, GetMaxHealth()));
 	OnHealthChanged.Broadcast(GetHealth());
 	if (IsDead()) OnDeath.Broadcast();
+}*/
+
+void UHealthSystem::SetMaxHealth(double const NewMaxHealth)
+{
+	MaxHealth = NewMaxHealth;
+
+	OnMaxHealthChanged.Broadcast(GetMaxHealth());
 }
 
 void UHealthSystem::Heal(double HealAmount, AActor* HealSource)
