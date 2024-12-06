@@ -22,12 +22,12 @@ UMegatronManager::UMegatronManager()
 
 	HealthSystem = CreateDefaultSubobject<UHealthSystem>(TEXT("HealthSystem"));
 	HealthWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthWidget"));
-	//if (HealthWidget)
-	//{
-	//	AddOwnedComponent(HealthWidget);
-	//	HealthWidget->SetupAttachment(GetRootComponent());
-	//	HealthWidget->SetWidgetSpace(EWidgetSpace::Screen);
-	//}
+	if (HealthWidget)
+	{
+		HealthWidget->SetWidgetSpace(EWidgetSpace::World);
+		HealthWidget->SetVisibility(true);
+		//HealthWidget->RegisterComponent();
+	}
 }
 
 // Called when the game starts
@@ -35,6 +35,10 @@ void UMegatronManager::BeginPlay()
 {
 	Super::BeginPlay();
 	LocomotionManager->SetConnectorCount(Connectors.Num());
+	//if (GetOwner()->StaticClass() != this->StaticClass())
+	//{
+	//	GetOwner()->AddOwnedComponent(HealthWidget);
+	//}
 }
 
 // Called every frame

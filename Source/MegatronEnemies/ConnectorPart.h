@@ -17,7 +17,7 @@ struct FIndividualInteraction
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
 	FComponentReference MeshReference;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultInteractionPart"))
 	TObjectPtr<class UInteractionPart> DefaultInteractionPart;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPossibleBodyParts> PossibleInteractions;
@@ -34,7 +34,7 @@ struct FIndividualLocomotion
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
 	FComponentReference MeshReference;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultLocomotionPart"))
 	TObjectPtr<class ULocomotionPart> DefaultLocomotionPart;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPossibleBodyParts> PossibleLocomotions;
@@ -51,7 +51,7 @@ struct FIndividualPerception
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
 	FComponentReference MeshReference;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultPerceptionPart"))
 	TObjectPtr<class UPerceptionPart> DefaultPerceptionPart;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPossibleBodyParts> PossiblePerceptions;
