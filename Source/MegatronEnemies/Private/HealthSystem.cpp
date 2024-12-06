@@ -1,6 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "MegatronEnemies/Public/HealthSystem.h"
 
 // Sets default values for this component's properties
@@ -11,7 +10,6 @@ UHealthSystem::UHealthSystem()
 	PrimaryComponentTick.bCanEverTick = false;
 }
 
-
 // Called when the game starts
 void UHealthSystem::BeginPlay()
 {
@@ -19,9 +17,7 @@ void UHealthSystem::BeginPlay()
 
 	if (Health == 0)
 		Health = MaxHealth;
-	
 }
-
 
 // Called every frame
 void UHealthSystem::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -36,7 +32,7 @@ void UHealthSystem::SetHealth(double const NewHealth)
 	Health = FMath::Clamp(NewHealth, 0.0, GetMaxHealth());
 
 	OnHealthChanged.Broadcast(GetHealth());
-	
+
 	if (IsDead())
 		OnDeath.Broadcast();
 }
@@ -60,4 +56,3 @@ void UHealthSystem::Heal(double HealAmount, AActor* HealSource)
 	SetHealth(FMath::Clamp(GetHealth() + HealAmount, 0.0f, GetMaxHealth()));
 	OnHealthChanged.Broadcast(GetHealth());
 }
-

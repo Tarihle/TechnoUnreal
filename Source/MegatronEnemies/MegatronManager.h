@@ -31,19 +31,22 @@ class MEGATRONENEMIES_API UMegatronManager : public UActorComponent
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Megatron)
+	int32 CharacterLevel = 1;
+
   private:
 	TObjectPtr<class UInteractionManager> InteractionManager;
 	TObjectPtr<class ULocomotionManager>  LocomotionManager;
 	TObjectPtr<class UPerceptionManager>  PerceptionManager;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Megatron", meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Megatron, meta = (AllowPrivateAccess = "true"))
 	TArray<class UConnectorPart*> Connectors;
 
 	// TODO: add possible connectors
 
-	float MaxHealth = 0.f;
-
-  protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Megatron")
-	int32 CharacterLevel = 1;
+	// float MaxHealth = 0.f;
+	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = Health, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UHealthSystem> HealthSystem;
+	UPROPERTY(EditAnywhere, BluePrintReadOnly, Category = Health, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UWidgetComponent> HealthWidget;
 };

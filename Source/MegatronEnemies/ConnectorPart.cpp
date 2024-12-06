@@ -21,29 +21,28 @@ void UConnectorPart::InitializeComponent()
 {
 	Super::InitializeComponent();
 
-	OwnerCharacter = Cast<ACharacter>(GetOwner());
-
-	if (OwnerCharacter->GetComponentByClass<UMegatronManager>())
-	{
-		LocomotionManagerRef = OwnerCharacter->GetComponentByClass<UMegatronManager>()->GetLocomotion();
-		UE_LOG(LogTemp, Warning, TEXT("LocomotionManagerRef set"));
-	}
 }
 
 void UConnectorPart::BeginPlay()
 {
 	Super::BeginPlay();
 
+	OwnerCharacter = Cast<ACharacter>(GetOwner());
 	if (!OwnerCharacter)
 	{
 		return;
 	}
 
-	GenerateInteractionParts();
-	GenerateLocomotionParts();
-	GeneratePerceptionParts();
+	if (OwnerCharacter->GetComponentByClass<UMegatronManager>())
+	{
+		LocomotionManagerRef = OwnerCharacter->GetComponentByClass<UMegatronManager>()->GetLocomotion();
+		// UE_LOG(LogTemp, Warning, TEXT("LocomotionManagerRef set for %s"), *this->GetFName().ToString());
+		GenerateInteractionParts();
+		GenerateLocomotionParts();
+		GeneratePerceptionParts();
 
-	LocomotionManagerRef->OnConnectorInitialized();
+		LocomotionManagerRef->OnConnectorInitialized();
+	}
 }
 
 void UConnectorPart::GenerateInteractionParts()
@@ -75,7 +74,7 @@ void UConnectorPart::GenerateInteractionParts()
 			}
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Generated Interactions"));
+	UE_LOG(LogTemp, Warning, TEXT("Generated Interactions for %s"), *this->GetFName().ToString());
 }
 
 void UConnectorPart::GenerateLocomotionParts()
@@ -110,7 +109,7 @@ void UConnectorPart::GenerateLocomotionParts()
 			}
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Generated Locomotions"));
+	UE_LOG(LogTemp, Warning, TEXT("Generated Locomotions for %s"), *this->GetFName().ToString());
 }
 
 void UConnectorPart::GeneratePerceptionParts()
@@ -129,12 +128,18 @@ void UConnectorPart::GeneratePerceptionParts()
 			else if (PerceptionParts[i].DefaultPerceptionPart)
 			{
 				Ref->SetSkeletalMesh(PerceptionParts[i].DefaultPerceptionPart->SkeletalMesh);
+				UE_LOG(
+					LogTemp, Warning, TEXT("Using %s"),
+					*PerceptionParts[i].DefaultPerceptionPart->SkeletalMesh.GetFName().ToString());
 			}
 			else if (PerceptionParts[i].PossiblePerceptions)
 			{
 				int32 Index = FMath::RandRange(0, PerceptionParts[i].PossiblePerceptions->GetPartArray().Num() - 1);
 
 				Ref->SetSkeletalMesh(PerceptionParts[i].PossiblePerceptions->GetPartArray()[Index]->SkeletalMesh);
+				UE_LOG(
+					LogTemp, Warning, TEXT("Using %s"),
+					*PerceptionParts[i].PossiblePerceptions->GetPartArray()[Index]->GetFName().ToString());
 			}
 			else
 			{
@@ -142,7 +147,7 @@ void UConnectorPart::GeneratePerceptionParts()
 			}
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Generated Perceptions"));
+	UE_LOG(LogTemp, Warning, TEXT("Generated Perceptions for %s"), *this->GetFName().ToString());
 }
 
 FIndividualInteraction::FIndividualInteraction()

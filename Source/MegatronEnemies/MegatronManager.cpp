@@ -5,6 +5,9 @@
 #include "InteractionManager.h"
 #include "LocomotionManager.h"
 #include "PerceptionManager.h"
+#include "Public/HealthSystem.h"
+
+#include "Components/WidgetComponent.h"
 
 // Sets default values for this component's properties
 UMegatronManager::UMegatronManager()
@@ -16,6 +19,15 @@ UMegatronManager::UMegatronManager()
 	LocomotionManager = CreateDefaultSubobject<ULocomotionManager>(TEXT("LocomotionManager"));
 	InteractionManager = CreateDefaultSubobject<UInteractionManager>(TEXT("InteractionManager"));
 	PerceptionManager = CreateDefaultSubobject<UPerceptionManager>(TEXT("PerceptionManager"));
+
+	HealthSystem = CreateDefaultSubobject<UHealthSystem>(TEXT("HealthSystem"));
+	HealthWidget = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthWidget"));
+	//if (HealthWidget)
+	//{
+	//	AddOwnedComponent(HealthWidget);
+	//	HealthWidget->SetupAttachment(GetRootComponent());
+	//	HealthWidget->SetWidgetSpace(EWidgetSpace::Screen);
+	//}
 }
 
 // Called when the game starts

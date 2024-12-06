@@ -8,7 +8,7 @@ public class MegatronEnemies : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "SkeletalMerging", "GameplayTags" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "SkeletalMerging", "GameplayTags", "UMG" });
 
         //PublicIncludePaths.AddRange(new string[] { "SkeletalMergingLibrary/Public/SkeletalMergingLibrary.h" });
     }
