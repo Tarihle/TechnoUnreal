@@ -39,6 +39,7 @@ class MEGATRONENEMIES_API UBodyPart : public USkeletalMeshComponent
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Behavior)
 	TMap<FGameplayTag, FActionIndex> ActionMap;
 
+	UPROPERTY(VisibleAnywhere)
 	TArray<class UMegatronTask*> Actions;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stats)
@@ -58,6 +59,14 @@ class MEGATRONENEMIES_API UBodyPart : public USkeletalMeshComponent
 	/* Get action from Gameplay Tag as specified in ActionMap. Returns Null on failure */
 	UFUNCTION(BlueprintPure)
 	class UMegatronTask* GetTask(FGameplayTag Tag);
+
+	UFUNCTION(BlueprintPure)
+	bool HasTaskByTag(FGameplayTag Tag);
+
+
+	UFUNCTION(BlueprintPure)
+	bool HasTaskByClass(TSubclassOf<class UMegatronTask> Class);
+
 
 	static bool IsInteraction(UBodyPart* Part);
 	static bool IsConnector(UBodyPart* Part);

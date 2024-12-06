@@ -45,6 +45,15 @@ class MEGATRONENEMIES_API ULocomotionManager : public UActorComponent
 	void OnConnectorInitialized();
 	void SetConnectorCount(int32 Count);
 
+	UFUNCTION(BlueprintPure)
+	class ULocomotionPart* GetRandomPart();
+
+	UFUNCTION(BlueprintPure)
+	TArray<class ULocomotionPart*> GetAllPartsWithTaskByClass(TSubclassOf<class UMegatronTask> TaskClass);
+
+	UFUNCTION(BlueprintPure)
+	TArray<class ULocomotionPart*> GetAllPartsWithTaskByTag(struct FGameplayTag Tag);
+
   protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

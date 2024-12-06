@@ -3,7 +3,7 @@
 #include "BodyPart.h"
 
 #include "MegatronTask.h"
-
+#include "Kismet/KismetSystemLibrary.h"
 #include "UObject/Class.h"
 
 void UBodyPart::BeginPlay()
@@ -21,11 +21,39 @@ UBodyPart::UBodyPart()
 
 UMegatronTask* UBodyPart::GetTask(FGameplayTag Tag)
 {
-	if (ActionMap.Contains(Tag))
+
+	if (Actions.IsEmpty())
+	{
+			UE_LOG(LogTemp, Error,
+				   TEXT("%s action array is empty. GetTask may have been called before this object's BeginPlay sequence.\
+Ignore this error if you are compiling a Blueprint"),
+				   UKismetSystemLibrary::GetDisplayName(this).GetCharArray().GetData()
+			);
+
+			return nullptr;
+	}
+
+	else if (ActionMap.Contains(Tag))
 		return Actions[ActionMap.Find(Tag)->Index];
 
 	else
 		return nullptr;
+}
+
+bool UBodyPart::HasTaskByTag(FGameplayTag Tag)
+{
+	return ActionMap.Contains(Tag);
+}
+
+bool UBodyPart::HasTaskByClass(TSubclassOf<class UMegatronTask> Class)
+{
+	for (const auto& Task : ActionMap)
+	{
+		if (Task.Value.Class == Class)
+			return true;
+	}
+
+	return false;
 }
 
 void UBodyPart::InitializeComponent()

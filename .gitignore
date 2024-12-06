@@ -1,6 +1,10 @@
 # Visual Studio 2015 user specific files
 .vs/
 
+# Jetbrains IDE specific files
+.idea/
+*.sln.DotSettings.user
+
 #formatting/tidying
 *.clang-format
 *.clang-tidy

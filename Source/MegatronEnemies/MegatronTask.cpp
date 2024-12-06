@@ -9,11 +9,6 @@ void UMegatronTask::Execute_Implementation()
 	Status = EMegatronTaskStatus::IN_PROGRESS;
 }
 
-void UMegatronTask::Tick_Implementation(float DeltaSeconds)
-{
-	// Empty for parent class
-}
-
 void UMegatronTask::Abort()
 {
 	Status = EMegatronTaskStatus::ABORTED;
@@ -28,6 +23,9 @@ EMegatronTaskStatus UMegatronTask::GetStatus() const
 
 void UMegatronTask::Finish(bool bSuccess)
 {
+	if (EMegatronTaskStatus::IN_PROGRESS != Status)
+		return;
+
 	if (bSuccess)
 	{
 		Status = EMegatronTaskStatus::COMPLETED;

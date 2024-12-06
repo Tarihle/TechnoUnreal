@@ -45,7 +45,7 @@ public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Execute();
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintImplementableEvent)
 	void Tick(float DeltaSeconds);
 
 	UFUNCTION(BlueprintCallable)
@@ -63,13 +63,13 @@ private:
 
 public:
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FTaskCompletedSignature		OnTaskSuccess;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FTaskAbortedSignature		OnTaskAbort;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, BlueprintAssignable)
 	FTaskFailedSignature		OnTaskFailure;
 
 protected:

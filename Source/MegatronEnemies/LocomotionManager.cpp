@@ -7,6 +7,7 @@
 
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "GameplayTagContainer.h"
 
 // Sets default values for this component's properties
 ULocomotionManager::ULocomotionManager()
@@ -90,6 +91,46 @@ void ULocomotionManager::OnConnectorInitialized()
 void ULocomotionManager::SetConnectorCount(int32 Count)
 {
 	ConnectorCount = Count;
+}
+
+class ULocomotionPart* ULocomotionManager::GetRandomPart()
+{
+	if (ChosenLocomotionArray.IsEmpty())
+		return nullptr;
+
+	return ChosenLocomotionArray[FMath::RandRange(0, ChosenLocomotionArray.Num() - 1)];
+}
+
+TArray<ULocomotionPart*> ULocomotionManager::GetAllPartsWithTaskByClass(TSubclassOf<class UMegatronTask> TaskClass)
+{
+	if (ChosenLocomotionArray.IsEmpty())
+		return TArray<ULocomotionPart*>();
+
+	TArray<ULocomotionPart*> FilteredArray;
+
+	for (ULocomotionPart* Leg : ChosenLocomotionArray)
+	{
+		if (Leg->HasTaskByClass(TaskClass))
+			FilteredArray.Add(Leg);
+	}
+
+	return FilteredArray;
+}
+
+TArray<ULocomotionPart*> ULocomotionManager::GetAllPartsWithTaskByTag(FGameplayTag Tag)
+{
+	if (ChosenLocomotionArray.IsEmpty())
+		return TArray<ULocomotionPart*>();
+
+	TArray<ULocomotionPart*> FilteredArray;
+
+	for (ULocomotionPart* Leg : ChosenLocomotionArray)
+	{
+		if (Leg->HasTaskByTag(Tag))
+			FilteredArray.Add(Leg);
+	}
+
+	return FilteredArray;
 }
 
 // Called when the game starts
