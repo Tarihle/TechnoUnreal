@@ -1,6 +1,10 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "InteractionManager.h"
+#include "InteractionPart.h"
+#include "GameFramework/Character.h"
+#include "GameplayTags.h"
+
 
 // Sets default values for this component's properties
 UInteractionManager::UInteractionManager()
@@ -12,12 +16,28 @@ UInteractionManager::UInteractionManager()
 	// ...
 }
 
+UInteractionPart* UInteractionManager::GetRandomPart()
+{
+	return GetRandomPartBase<UInteractionPart>();
+}
+
+TArray<UInteractionPart*> UInteractionManager::GetAllPartsWithTaskByClass(TSubclassOf<UMegatronTask> TaskClass)
+{
+	return GetAllPartsWithTaskByClassBase<UInteractionPart>(TaskClass);
+}
+
 // Called when the game starts
 void UInteractionManager::BeginPlay()
 {
 	Super::BeginPlay();
+	OwnerCharacter = CastChecked<ACharacter>(GetOwner());
 
 	// ...
+}
+
+TArray<UInteractionPart*> UInteractionManager::GetAllPartsWithTaskByTag(FGameplayTag Tag)
+{
+	return GetAllPartsWithTaskByTagBase<UInteractionPart>(Tag);
 }
 
 // Called every frame
@@ -27,3 +47,5 @@ void UInteractionManager::TickComponent(float DeltaTime, ELevelTick TickType, FA
 
 	// ...
 }
+
+

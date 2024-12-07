@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BasePartManager.h"
 #include "Components/ActorComponent.h"
 #include "PerceptionManager.generated.h"
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class MEGATRONENEMIES_API UPerceptionManager : public UActorComponent
+UCLASS()
+class MEGATRONENEMIES_API UPerceptionManager : public UBasePartManager
 {
 	GENERATED_BODY()
 

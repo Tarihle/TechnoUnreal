@@ -24,11 +24,10 @@ void ULocomotionManager::Initialize(/*const TArray<class UConnectorPart*>& Conne
 	OwnerCharacter = CastChecked<ACharacter>(GetOwner());
 
 	float LegCount = 0;
-
-	// for (UConnectorPart* Trunk : Connectors)
-	//{
-	for (ULocomotionPart* Leg : ChosenLocomotionArray)
+	
+	for (UBodyPart* Part : SelectedBodyParts)
 	{
+		ULocomotionPart* Leg = CastChecked<ULocomotionPart>(Part);
 		FMovementConstraints& Constraints = Leg->GetMovementConstraints();
 
 		++LegCount;
@@ -51,7 +50,6 @@ void ULocomotionManager::Initialize(/*const TArray<class UConnectorPart*>& Conne
 		if (Constraints.bCanCrouch)
 			AverageCrouchMultiplier += Leg->GetCrouchMultiplier();
 	}
-	//}
 
 	if (!bCanEverWalk)
 		GlobalWalkSpeed = 0.f;
@@ -77,10 +75,10 @@ void ULocomotionManager::StopJumping()
 	OwnerCharacter->StopJumping();
 }
 
-void ULocomotionManager::AddArrayElement(ULocomotionPart* const& ChosenElement)
-{
-	ChosenLocomotionArray.Add(ChosenElement);
-}
+// void ULocomotionManager::AddArrayElement(ULocomotionPart* const& ChosenElement)
+// {
+// 	ChosenLocomotionArray.Add(ChosenElement);
+// }
 
 void ULocomotionManager::OnConnectorInitialized()
 {
@@ -93,44 +91,19 @@ void ULocomotionManager::SetConnectorCount(int32 Count)
 	ConnectorCount = Count;
 }
 
-class ULocomotionPart* ULocomotionManager::GetRandomPart()
+ULocomotionPart* ULocomotionManager::GetRandomPart()
 {
-	if (ChosenLocomotionArray.IsEmpty())
-		return nullptr;
-
-	return ChosenLocomotionArray[FMath::RandRange(0, ChosenLocomotionArray.Num() - 1)];
+	return GetRandomPartBase<ULocomotionPart>();
 }
 
 TArray<ULocomotionPart*> ULocomotionManager::GetAllPartsWithTaskByClass(TSubclassOf<class UMegatronTask> TaskClass)
 {
-	if (ChosenLocomotionArray.IsEmpty())
-		return TArray<ULocomotionPart*>();
-
-	TArray<ULocomotionPart*> FilteredArray;
-
-	for (ULocomotionPart* Leg : ChosenLocomotionArray)
-	{
-		if (Leg->HasTaskByClass(TaskClass))
-			FilteredArray.Add(Leg);
-	}
-
-	return FilteredArray;
+	return GetAllPartsWithTaskByClassBase<ULocomotionPart>(TaskClass);
 }
 
 TArray<ULocomotionPart*> ULocomotionManager::GetAllPartsWithTaskByTag(FGameplayTag Tag)
 {
-	if (ChosenLocomotionArray.IsEmpty())
-		return TArray<ULocomotionPart*>();
-
-	TArray<ULocomotionPart*> FilteredArray;
-
-	for (ULocomotionPart* Leg : ChosenLocomotionArray)
-	{
-		if (Leg->HasTaskByTag(Tag))
-			FilteredArray.Add(Leg);
-	}
-
-	return FilteredArray;
+	return GetAllPartsWithTaskByTagBase<ULocomotionPart>(Tag);
 }
 
 // Called when the game starts
@@ -151,6 +124,8 @@ void ULocomotionManager::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 
 void ULocomotionManager::OnPartDestroyed(ULocomotionPart* Part)
 {
+	Super::OnPartDestroyed(Part);
+	
 	GlobalWalkSpeed -= Part->GetBaseSpeed();
 	GlobalSprintMultiplier /= Part->GetSprintMultiplier();
 	GlobalJumpForce -= Part->GetJumpForce();
