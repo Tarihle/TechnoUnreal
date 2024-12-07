@@ -3,23 +3,33 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BasePartManager.h"
 #include "Components/ActorComponent.h"
 #include "InteractionManager.generated.h"
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class MEGATRONENEMIES_API UInteractionManager : public UActorComponent
+UCLASS()
+class MEGATRONENEMIES_API UInteractionManager : public UBasePartManager
 {
 	GENERATED_BODY()
 
-  public:
+public:
 	// Sets default values for this component's properties
 	UInteractionManager();
 
-  protected:
+	UFUNCTION(BlueprintPure)
+	class UInteractionPart* GetRandomPart();
+	
+	UFUNCTION(BlueprintPure)
+	TArray<class UInteractionPart*> GetAllPartsWithTaskByClass(TSubclassOf<class UMegatronTask> TaskClass);
+
+	UFUNCTION(BlueprintPure)
+	TArray<class UInteractionPart*> GetAllPartsWithTaskByTag(struct FGameplayTag Tag);
+
+protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-  public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
 };

@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/ActorComponent.h"
+#include "BasePartManager.h"
 #include "LocomotionManager.generated.h"
 
-UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class MEGATRONENEMIES_API ULocomotionManager : public UActorComponent
+UCLASS()
+class MEGATRONENEMIES_API ULocomotionManager : public UBasePartManager
 {
 	GENERATED_BODY()
 
@@ -19,8 +19,7 @@ class MEGATRONENEMIES_API ULocomotionManager : public UActorComponent
 
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void OnPartDestroyed(class ULocomotionPart* Part);
+	
 
 	UFUNCTION(BlueprintCallable)
 	void Sprint();
@@ -40,7 +39,7 @@ class MEGATRONENEMIES_API ULocomotionManager : public UActorComponent
 	UFUNCTION(BlueprintCallable)
 	void StopJumping();
 
-	void AddArrayElement(ULocomotionPart* const& ChosenElement);
+	void OnPartDestroyed(class ULocomotionPart* Part);
 
 	void OnConnectorInitialized();
 	void SetConnectorCount(int32 Count);
@@ -57,9 +56,6 @@ class MEGATRONENEMIES_API ULocomotionManager : public UActorComponent
   protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
-	TObjectPtr<class ACharacter>   OwnerCharacter;
-	TArray<class ULocomotionPart*> ChosenLocomotionArray;
 
   private:
 	float GlobalWalkSpeed = 0.f;
