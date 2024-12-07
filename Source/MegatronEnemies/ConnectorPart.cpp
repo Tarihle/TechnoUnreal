@@ -89,6 +89,8 @@ void UConnectorPart::GenerateDefaultPart(
 
 		TObjectPtr<UInteractionPart> InteractionPartCreated =
 			Cast<UInteractionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, FTransform::Identity, false));
+		InteractionPartCreated->SetHiddenInGame(true);
+		InteractionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		// if (InteractionPartCreated)
 		//{
 		//	InteractionManagerRef->AddArrayElement(InteractionPartCreated);
@@ -100,6 +102,9 @@ void UConnectorPart::GenerateDefaultPart(
 
 		TObjectPtr<ULocomotionPart> LocomotionPartCreated =
 			Cast<ULocomotionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, FTransform::Identity, false));
+
+		LocomotionPartCreated->SetHiddenInGame(true);
+		LocomotionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		if (LocomotionPartCreated)
 		{
 			LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
@@ -111,6 +116,8 @@ void UConnectorPart::GenerateDefaultPart(
 
 		TObjectPtr<UPerceptionPart> PerceptionPartCreated =
 			Cast<UPerceptionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, FTransform::Identity, false));
+		PerceptionPartCreated->SetHiddenInGame(true);
+		PerceptionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		// if (PerceptionPartCreated)
 		//{
 		//	PerceptionManagerRef->AddArrayElement(PerceptionPartCreated);
