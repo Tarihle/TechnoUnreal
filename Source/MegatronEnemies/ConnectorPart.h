@@ -6,10 +6,8 @@
 #include "BodyPart.h"
 #include "ConnectorPart.generated.h"
 
-/* I've tried to use unions to have a single struct but without success because I suck at my job and everything I do, */
-/* So if you manage to make it work, congrats *slow claps* */
 USTRUCT(BlueprintType)
-struct FIndividualInteraction
+struct FIndividualBodyPart
 {
 	GENERATED_BODY()
 
@@ -17,46 +15,12 @@ struct FIndividualInteraction
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
 	FComponentReference MeshReference;
 
-	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultInteractionPart"))
-	TObjectPtr<class UInteractionPart> DefaultInteractionPart;
+	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultPart"))
+	TSoftClassPtr<UBodyPart> DefaultPart;
 	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UPossibleBodyParts> PossibleInteractions;
+	TObjectPtr<class UPossibleBodyParts> PossibleParts;
 
-	FIndividualInteraction();
-};
-
-USTRUCT(BlueprintType)
-struct FIndividualLocomotion
-{
-	GENERATED_BODY()
-
-  public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
-	FComponentReference MeshReference;
-
-	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultLocomotionPart"))
-	TObjectPtr<class ULocomotionPart> DefaultLocomotionPart;
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UPossibleBodyParts> PossibleLocomotions;
-
-	FIndividualLocomotion();
-};
-
-USTRUCT(BlueprintType)
-struct FIndividualPerception
-{
-	GENERATED_BODY()
-
-  public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
-	FComponentReference MeshReference;
-
-	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultPerceptionPart"))
-	TObjectPtr<class UPerceptionPart> DefaultPerceptionPart;
-	UPROPERTY(EditAnywhere)
-	TObjectPtr<class UPossibleBodyParts> PossiblePerceptions;
-
-	FIndividualPerception();
+	FIndividualBodyPart();
 };
 
 /**
@@ -72,14 +36,12 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	void InitializeComponent() override;
 
   protected:
-	
-	TArray<class USkeletalMesh*> PossibleMeshes;
-	
-	TObjectPtr<class ACharacter> OwnerCharacter;
+	TObjectPtr<class ACharacter>		 OwnerCharacter;
 	TObjectPtr<class ULocomotionManager> LocomotionManagerRef;
 	TObjectPtr<class UInteractionManager> InteractionManagerRef;
 	TObjectPtr<class UPerceptionManager> PerceptionManagerRef;
 
+	TArray<class USkeletalMesh*> PossibleMeshes;
 
 	UPROPERTY(EditAnywhere, meta = (InlineEditConditionToggle))
 	bool bUseInteraction = false;
@@ -88,21 +50,23 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	UPROPERTY(EditAnywhere, meta = (InlineEditConditionToggle))
 	bool bUsePerception = false;
 
-	UPROPERTY(EditAnywhere , BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUseInteraction"))
-	TArray<FIndividualInteraction> InteractionParts;
-	UPROPERTY(EditAnywhere , BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUseLocomotion"))
-	TArray<FIndividualLocomotion> LocomotionParts;
-	UPROPERTY(EditAnywhere , BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUsePerception"))
-	TArray<FIndividualPerception> PerceptionParts;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUseInteraction"))
+	TArray<FIndividualBodyPart> InteractionParts;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUseLocomotion"))
+	TArray<FIndividualBodyPart> LocomotionParts;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUsePerception"))
+	TArray<FIndividualBodyPart> PerceptionParts;
 
 	void BeginPlay() override;
 
 	/* These functions are basically the same, we separate them for usability and because we have 3 different
 	 * "IndividualPart" structs */
 	UFUNCTION()
-	void GenerateInteractionParts();
+	void GenerateParts(TArray<FIndividualBodyPart> PartsArray, EBodyPartType PartType);
 	UFUNCTION()
-	void GenerateLocomotionParts();
+	void GenerateDefaultPart(
+		TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, EBodyPartType PartType, USkeletalMeshComponent* MeshRef);
 	UFUNCTION()
-	void GeneratePerceptionParts();
+	void GenerateRandomPart(
+		TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, EBodyPartType PartType, USkeletalMeshComponent* MeshRef);
 };
