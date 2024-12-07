@@ -3,9 +3,11 @@
 #include "ConnectorPart.h"
 
 #include "InteractionPart.h"
+#include "InteractionManager.h"
 #include "LocomotionManager.h"
 #include "LocomotionPart.h"
 #include "MegatronManager.h"
+#include "PerceptionManager.h"
 #include "PerceptionPart.h"
 #include "PossibleBodyParts.h"
 
@@ -35,7 +37,11 @@ void UConnectorPart::BeginPlay()
 
 	if (OwnerCharacter->GetComponentByClass<UMegatronManager>())
 	{
-		LocomotionManagerRef = OwnerCharacter->GetComponentByClass<UMegatronManager>()->GetLocomotion();
+		UMegatronManager* MegatronManager = OwnerCharacter->GetComponentByClass<UMegatronManager>();
+		
+		LocomotionManagerRef = MegatronManager->GetLocomotion();
+		InteractionManagerRef = MegatronManager->GetInteraction();
+		PerceptionManagerRef = MegatronManager->GetPerception();
 		// UE_LOG(LogTemp, Warning, TEXT("LocomotionManagerRef set for %s"), *this->GetFName().ToString());
 		GenerateInteractionParts();
 		GenerateLocomotionParts();
@@ -61,12 +67,15 @@ void UConnectorPart::GenerateInteractionParts()
 			else if (InteractionParts[i].DefaultInteractionPart)
 			{
 				Ref->SetSkeletalMesh(InteractionParts[i].DefaultInteractionPart->SkeletalMesh);
+				InteractionManagerRef->AddArrayElement(InteractionParts[i].DefaultInteractionPart);
 			}
 			else if (InteractionParts[i].PossibleInteractions)
 			{
 				int32 Index = FMath::RandRange(0, InteractionParts[i].PossibleInteractions->GetPartArray().Num() - 1);
 
 				Ref->SetSkeletalMesh(InteractionParts[i].PossibleInteractions->GetPartArray()[Index]->SkeletalMesh);
+				UInteractionPart* CastPart = Cast<UInteractionPart>(InteractionParts[i].PossibleInteractions->GetPartArray()[Index]);
+				InteractionManagerRef->AddArrayElement(CastPart);
 			}
 			else
 			{
@@ -131,6 +140,8 @@ void UConnectorPart::GeneratePerceptionParts()
 				UE_LOG(
 					LogTemp, Warning, TEXT("Using %s"),
 					*PerceptionParts[i].DefaultPerceptionPart->SkeletalMesh.GetFName().ToString());
+				
+				PerceptionManagerRef->AddArrayElement(PerceptionParts[i].DefaultPerceptionPart);
 			}
 			else if (PerceptionParts[i].PossiblePerceptions)
 			{
@@ -140,6 +151,9 @@ void UConnectorPart::GeneratePerceptionParts()
 				UE_LOG(
 					LogTemp, Warning, TEXT("Using %s"),
 					*PerceptionParts[i].PossiblePerceptions->GetPartArray()[Index]->GetFName().ToString());
+
+				UPerceptionPart* CastPart = Cast<UPerceptionPart>(PerceptionParts[i].PossiblePerceptions->GetPartArray()[Index]);
+				PerceptionManagerRef->AddArrayElement(CastPart);
 			}
 			else
 			{

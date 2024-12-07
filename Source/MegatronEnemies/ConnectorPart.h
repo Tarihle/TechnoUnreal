@@ -72,10 +72,14 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	void InitializeComponent() override;
 
   protected:
+	
+	TArray<class USkeletalMesh*> PossibleMeshes;
+	
 	TObjectPtr<class ACharacter> OwnerCharacter;
 	TObjectPtr<class ULocomotionManager> LocomotionManagerRef;
+	TObjectPtr<class UInteractionManager> InteractionManagerRef;
+	TObjectPtr<class UPerceptionManager> PerceptionManagerRef;
 
-	TArray<class USkeletalMesh*> PossibleMeshes;
 
 	UPROPERTY(EditAnywhere, meta = (InlineEditConditionToggle))
 	bool bUseInteraction = false;
