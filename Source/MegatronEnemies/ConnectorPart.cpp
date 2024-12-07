@@ -60,13 +60,13 @@ void UConnectorPart::GenerateInteractionParts()
 
 			else if (InteractionParts[i].DefaultInteractionPart)
 			{
-				Ref->SetSkeletalMesh(InteractionParts[i].DefaultInteractionPart->SkeletalMesh);
+				Ref->SetSkeletalMesh(InteractionParts[i].DefaultInteractionPart->GetSkeletalMeshAsset());
 			}
 			else if (InteractionParts[i].PossibleInteractions)
 			{
 				int32 Index = FMath::RandRange(0, InteractionParts[i].PossibleInteractions->GetPartArray().Num() - 1);
 
-				Ref->SetSkeletalMesh(InteractionParts[i].PossibleInteractions->GetPartArray()[Index]->SkeletalMesh);
+				Ref->SetSkeletalMesh(InteractionParts[i].PossibleInteractions->GetPartArray()[Index]->GetSkeletalMeshAsset());
 			}
 			else
 			{
@@ -92,14 +92,16 @@ void UConnectorPart::GenerateLocomotionParts()
 
 			else if (LocomotionParts[i].DefaultLocomotionPart)
 			{
-				Ref->SetSkeletalMesh(LocomotionParts[i].DefaultLocomotionPart->SkeletalMesh);
-				LocomotionManagerRef->AddArrayElement(LocomotionParts[i].DefaultLocomotionPart);
+				Ref->SetSkeletalMesh(LocomotionParts[i].DefaultLocomotionPart->GetDefaultObject<ULocomotionPart>()->GetSkeletalMeshAsset());
+				UClass* DefaultLocomotionLoaded = LocomotionParts[i].DefaultLocomotionPart.LoadSynchronous();
+				TObjectPtr<ULocomotionPart> LocomotionPartCreated = Cast<ULocomotionPart>(GetOwner()->AddComponentByClass(DefaultLocomotionLoaded, false, FTransform::Identity, false));
+				LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
 			}
 			else if (LocomotionParts[i].PossibleLocomotions)
 			{
 				int32 Index = FMath::RandRange(0, LocomotionParts[i].PossibleLocomotions->GetPartArray().Num() - 1);
 
-				Ref->SetSkeletalMesh(LocomotionParts[i].PossibleLocomotions->GetPartArray()[Index]->SkeletalMesh);
+				Ref->SetSkeletalMesh(LocomotionParts[i].PossibleLocomotions->GetPartArray()[Index]->GetSkeletalMeshAsset());
 				ULocomotionPart* CastPart = Cast<ULocomotionPart>(LocomotionParts[i].PossibleLocomotions->GetPartArray()[Index]);
 				LocomotionManagerRef->AddArrayElement(CastPart);
 			}
@@ -127,7 +129,7 @@ void UConnectorPart::GeneratePerceptionParts()
 
 			else if (PerceptionParts[i].DefaultPerceptionPart)
 			{
-				Ref->SetSkeletalMesh(PerceptionParts[i].DefaultPerceptionPart->SkeletalMesh);
+				Ref->SetSkeletalMesh(PerceptionParts[i].DefaultPerceptionPart->GetSkeletalMeshAsset());
 				UE_LOG(
 					LogTemp, Warning, TEXT("Using %s"),
 					*PerceptionParts[i].DefaultPerceptionPart->SkeletalMesh.GetFName().ToString());
@@ -136,7 +138,7 @@ void UConnectorPart::GeneratePerceptionParts()
 			{
 				int32 Index = FMath::RandRange(0, PerceptionParts[i].PossiblePerceptions->GetPartArray().Num() - 1);
 
-				Ref->SetSkeletalMesh(PerceptionParts[i].PossiblePerceptions->GetPartArray()[Index]->SkeletalMesh);
+				Ref->SetSkeletalMesh(PerceptionParts[i].PossiblePerceptions->GetPartArray()[Index]->GetSkeletalMeshAsset());
 				UE_LOG(
 					LogTemp, Warning, TEXT("Using %s"),
 					*PerceptionParts[i].PossiblePerceptions->GetPartArray()[Index]->GetFName().ToString());

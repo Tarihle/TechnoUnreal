@@ -35,7 +35,7 @@ struct FIndividualLocomotion
 	FComponentReference MeshReference;
 
 	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultLocomotionPart"))
-	TObjectPtr<class ULocomotionPart> DefaultLocomotionPart;
+	TSoftClassPtr<class ULocomotionPart> DefaultLocomotionPart;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPossibleBodyParts> PossibleLocomotions;
 
