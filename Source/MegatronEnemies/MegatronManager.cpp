@@ -39,6 +39,7 @@ void UMegatronManager::BeginPlay()
 	//{
 	//	GetOwner()->AddOwnedComponent(HealthWidget);
 	//}
+	HealthWidget->SetRelativeTransform(GetOwner()->GetActorTransform());
 }
 
 // Called every frame
