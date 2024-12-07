@@ -7,6 +7,7 @@
 void UMegatronTask::Execute_Implementation()
 {
 	Status = EMegatronTaskStatus::IN_PROGRESS;
+	CurrentExecuteCooldown = ExecuteCooldown;
 }
 
 void UMegatronTask::Abort()
@@ -15,6 +16,11 @@ void UMegatronTask::Abort()
 	OnTaskAbort.Broadcast();
 }
 
+
+bool UMegatronTask::CanExecute() const
+{
+	return !(CurrentExecuteCooldown > 0.f);
+}
 
 EMegatronTaskStatus UMegatronTask::GetStatus() const
 {
@@ -40,12 +46,15 @@ void UMegatronTask::Finish(bool bSuccess)
 
 EMegatronTaskStatus UMegatronTask::InternalTick(float DeltaSeconds)
 {
+	if (CurrentExecuteCooldown > 0.f)
+		CurrentExecuteCooldown -= DeltaSeconds;
+	
 	if (EMegatronTaskType::SINGLE_CALL == Type || EMegatronTaskStatus::IN_PROGRESS != Status)
 		return Status;
 
 	CurrentTickTime += DeltaSeconds;
 
-	if (CurrentTickTime < Interval)
+	if (CurrentTickTime < TickInterval)
 		return Status;
 
 	CurrentTickTime = 0.f;

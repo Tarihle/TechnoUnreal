@@ -42,6 +42,9 @@ class MEGATRONENEMIES_API UMegatronTask : public UObject
 
 public:
 
+	UFUNCTION(BlueprintPure)
+	bool CanExecute() const;
+
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Execute();
 
@@ -74,8 +77,17 @@ public:
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	float					Interval = -1.f;
+	// Interval between each Tick call
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float					TickInterval = -1.f;
+
+	// Cooldown before CanExecute function returns true
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float					ExecuteCooldown = 1.f;
+
+private:
+
+	float					CurrentExecuteCooldown = 0.f;
 	float					CurrentTickTime = 0.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
