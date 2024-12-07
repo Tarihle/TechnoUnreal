@@ -20,7 +20,6 @@ UConnectorPart::UConnectorPart()
 void UConnectorPart::InitializeComponent()
 {
 	Super::InitializeComponent();
-
 }
 
 void UConnectorPart::BeginPlay()
@@ -57,16 +56,27 @@ void UConnectorPart::GenerateInteractionParts()
 			{
 				UE_LOG(LogTemp, Error, TEXT("No Ref"));
 			}
-
-			else if (InteractionParts[i].DefaultInteractionPart)
+			else if (InteractionParts[i].DefaultPart)
 			{
-				Ref->SetSkeletalMesh(InteractionParts[i].DefaultInteractionPart->GetSkeletalMeshAsset());
+				Ref->SetSkeletalMesh(InteractionParts[i].DefaultPart->GetDefaultObject<UInteractionPart>()->GetSkeletalMeshAsset());
+				UClass*						 DefaultInteractionLoaded = InteractionParts[i].DefaultPart.LoadSynchronous();
+				TObjectPtr<UInteractionPart> InteractionPartCreated = Cast<UInteractionPart>(
+					GetOwner()->AddComponentByClass(DefaultInteractionLoaded, false, FTransform::Identity, false));
+				// if (InteractionPartCreated)
+				//{
+				//	InteractionManagerRef->AddArrayElement(InteractionPartCreated);
+				// }
 			}
-			else if (InteractionParts[i].PossibleInteractions)
+			else if (InteractionParts[i].PossibleParts)
 			{
-				int32 Index = FMath::RandRange(0, InteractionParts[i].PossibleInteractions->GetPartArray().Num() - 1);
+				int32 Index = FMath::RandRange(0, InteractionParts[i].PossibleParts->GetPartArray().Num() - 1);
 
-				Ref->SetSkeletalMesh(InteractionParts[i].PossibleInteractions->GetPartArray()[Index]->GetSkeletalMeshAsset());
+				Ref->SetSkeletalMesh(InteractionParts[i].PossibleParts->GetPartArray()[Index]->GetSkeletalMeshAsset());
+				UInteractionPart* CastPart = Cast<UInteractionPart>(InteractionParts[i].PossibleParts->GetPartArray()[Index]);
+				// if (CastPart)
+				//{
+				//	InteractionManagerRef->AddArrayElement(CastPart);
+				// }
 			}
 			else
 			{
@@ -89,20 +99,23 @@ void UConnectorPart::GenerateLocomotionParts()
 			{
 				UE_LOG(LogTemp, Error, TEXT("No Ref"));
 			}
-
-			else if (LocomotionParts[i].DefaultLocomotionPart)
+			else if (LocomotionParts[i].DefaultPart)
 			{
-				Ref->SetSkeletalMesh(LocomotionParts[i].DefaultLocomotionPart->GetDefaultObject<ULocomotionPart>()->GetSkeletalMeshAsset());
-				UClass* DefaultLocomotionLoaded = LocomotionParts[i].DefaultLocomotionPart.LoadSynchronous();
-				TObjectPtr<ULocomotionPart> LocomotionPartCreated = Cast<ULocomotionPart>(GetOwner()->AddComponentByClass(DefaultLocomotionLoaded, false, FTransform::Identity, false));
-				LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
+				Ref->SetSkeletalMesh(LocomotionParts[i].DefaultPart->GetDefaultObject<ULocomotionPart>()->GetSkeletalMeshAsset());
+				UClass*						DefaultLocomotionLoaded = LocomotionParts[i].DefaultPart.LoadSynchronous();
+				TObjectPtr<ULocomotionPart> LocomotionPartCreated = Cast<ULocomotionPart>(
+					GetOwner()->AddComponentByClass(DefaultLocomotionLoaded, false, FTransform::Identity, false));
+				if (LocomotionPartCreated)
+				{
+					LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
+				}
 			}
-			else if (LocomotionParts[i].PossibleLocomotions)
+			else if (LocomotionParts[i].PossibleParts)
 			{
-				int32 Index = FMath::RandRange(0, LocomotionParts[i].PossibleLocomotions->GetPartArray().Num() - 1);
+				int32 Index = FMath::RandRange(0, LocomotionParts[i].PossibleParts->GetPartArray().Num() - 1);
 
-				Ref->SetSkeletalMesh(LocomotionParts[i].PossibleLocomotions->GetPartArray()[Index]->GetSkeletalMeshAsset());
-				ULocomotionPart* CastPart = Cast<ULocomotionPart>(LocomotionParts[i].PossibleLocomotions->GetPartArray()[Index]);
+				Ref->SetSkeletalMesh(LocomotionParts[i].PossibleParts->GetPartArray()[Index]->GetSkeletalMeshAsset());
+				ULocomotionPart* CastPart = Cast<ULocomotionPart>(LocomotionParts[i].PossibleParts->GetPartArray()[Index]);
 				LocomotionManagerRef->AddArrayElement(CastPart);
 			}
 			else
@@ -126,22 +139,27 @@ void UConnectorPart::GeneratePerceptionParts()
 			{
 				UE_LOG(LogTemp, Error, TEXT("No Ref"));
 			}
-
-			else if (PerceptionParts[i].DefaultPerceptionPart)
+			else if (PerceptionParts[i].DefaultPart)
 			{
-				Ref->SetSkeletalMesh(PerceptionParts[i].DefaultPerceptionPart->GetSkeletalMeshAsset());
-				UE_LOG(
-					LogTemp, Warning, TEXT("Using %s"),
-					*PerceptionParts[i].DefaultPerceptionPart->SkeletalMesh.GetFName().ToString());
+				Ref->SetSkeletalMesh(PerceptionParts[i].DefaultPart->GetDefaultObject<UPerceptionPart>()->GetSkeletalMeshAsset());
+				UClass*						 DefaultPerceptionLoaded = PerceptionParts[i].DefaultPart.LoadSynchronous();
+				TObjectPtr<UPerceptionPart> PerceptionPartCreated = Cast<UPerceptionPart>(
+					GetOwner()->AddComponentByClass(DefaultPerceptionLoaded, false, FTransform::Identity, false));
+				// if (PerceptionPartCreated)
+				//{
+				//	PerceptionManagerRef->AddArrayElement(PerceptionPartCreated);
+				// }
 			}
-			else if (PerceptionParts[i].PossiblePerceptions)
+			else if (PerceptionParts[i].PossibleParts)
 			{
-				int32 Index = FMath::RandRange(0, PerceptionParts[i].PossiblePerceptions->GetPartArray().Num() - 1);
+				int32 Index = FMath::RandRange(0, PerceptionParts[i].PossibleParts->GetPartArray().Num() - 1);
 
-				Ref->SetSkeletalMesh(PerceptionParts[i].PossiblePerceptions->GetPartArray()[Index]->GetSkeletalMeshAsset());
-				UE_LOG(
-					LogTemp, Warning, TEXT("Using %s"),
-					*PerceptionParts[i].PossiblePerceptions->GetPartArray()[Index]->GetFName().ToString());
+				Ref->SetSkeletalMesh(PerceptionParts[i].PossibleParts->GetPartArray()[Index]->GetSkeletalMeshAsset());
+				UPerceptionPart* CastPart = Cast<UPerceptionPart>(PerceptionParts[i].PossibleParts->GetPartArray()[Index]);
+				// if (CastPart)
+				//{
+				//	PerceptionManagerRef->AddArrayElement(CastPart);
+				// }
 			}
 			else
 			{
@@ -152,14 +170,6 @@ void UConnectorPart::GeneratePerceptionParts()
 	UE_LOG(LogTemp, Warning, TEXT("Generated Perceptions for %s"), *this->GetFName().ToString());
 }
 
-FIndividualInteraction::FIndividualInteraction()
-{
-}
-
-FIndividualLocomotion::FIndividualLocomotion()
-{
-}
-
-FIndividualPerception::FIndividualPerception()
+FIndividualBodyPart::FIndividualBodyPart()
 {
 }
