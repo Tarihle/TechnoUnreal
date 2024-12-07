@@ -16,7 +16,7 @@ struct FIndividualBodyPart
 	FComponentReference MeshReference;
 
 	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultPart"))
-	TSoftClassPtr<class UBodyPart> DefaultPart;
+	TSoftClassPtr<UBodyPart> DefaultPart;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPossibleBodyParts> PossibleParts;
 
@@ -36,7 +36,7 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	void InitializeComponent() override;
 
   protected:
-	TObjectPtr<class ACharacter> OwnerCharacter;
+	TObjectPtr<class ACharacter>		 OwnerCharacter;
 	TObjectPtr<class ULocomotionManager> LocomotionManagerRef;
 
 	TArray<class USkeletalMesh*> PossibleMeshes;
@@ -48,11 +48,11 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	UPROPERTY(EditAnywhere, meta = (InlineEditConditionToggle))
 	bool bUsePerception = false;
 
-	UPROPERTY(EditAnywhere , BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUseInteraction"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUseInteraction"))
 	TArray<FIndividualBodyPart> InteractionParts;
-	UPROPERTY(EditAnywhere , BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUseLocomotion"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUseLocomotion"))
 	TArray<FIndividualBodyPart> LocomotionParts;
-	UPROPERTY(EditAnywhere , BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUsePerception"))
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUsePerception"))
 	TArray<FIndividualBodyPart> PerceptionParts;
 
 	void BeginPlay() override;
@@ -60,9 +60,11 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	/* These functions are basically the same, we separate them for usability and because we have 3 different
 	 * "IndividualPart" structs */
 	UFUNCTION()
-	void GenerateInteractionParts();
+	void GenerateParts(TArray<FIndividualBodyPart> PartsArray, EBodyPartType PartType);
 	UFUNCTION()
-	void GenerateLocomotionParts();
+	void GenerateDefaultPart(
+		TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, EBodyPartType PartType, USkeletalMeshComponent* MeshRef);
 	UFUNCTION()
-	void GeneratePerceptionParts();
+	void GenerateRandomPart(
+		TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, EBodyPartType PartType, USkeletalMeshComponent* MeshRef);
 };
