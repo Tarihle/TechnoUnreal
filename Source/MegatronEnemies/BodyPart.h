@@ -17,6 +17,7 @@ enum class EBodyPartType : uint8
 	PERCEPTION
 };
 
+
 USTRUCT(BlueprintType)
 struct FActionIndex
 {
@@ -39,7 +40,10 @@ class MEGATRONENEMIES_API UBodyPart : public USkeletalMeshComponent
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Behavior)
 	TMap<FGameplayTag, FActionIndex> ActionMap;
 
-	UPROPERTY(VisibleAnywhere)
+	/* Ugly workaround to allow designers to pick action classes
+	 * from the editor.*/
+	// TODO: make UMegatronTask compatible with Instnaced UPROPERTY specifier 
+	UPROPERTY()
 	TArray<class UMegatronTask*> Actions;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Stats)
