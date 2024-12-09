@@ -57,6 +57,8 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUsePerception"))
 	TArray<FIndividualBodyPart> PerceptionParts;
 
+	TArray<struct FWeightedParam> WhiteListRef;
+
 	void BeginPlay() override;
 
 	/* These functions are basically the same, we separate them for usability and because we have 3 different

@@ -8,7 +8,7 @@ UPossibleBodyParts::UPossibleBodyParts()
 {
 }
 
-TArray<UBodyPart*> UPossibleBodyParts::GetPartArray()
+TArray<TSoftClassPtr<UBodyPart>> UPossibleBodyParts::GetPartArray()
 {
 	return BodyPartsArray;
 }

@@ -63,3 +63,8 @@ UPerceptionManager* UMegatronManager::GetPerception()
 {
 	return PerceptionManager;
 }
+
+UGenerationParameters* UMegatronManager::GetGenParams()
+{
+	return GenerationParameters;
+}
