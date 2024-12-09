@@ -15,8 +15,8 @@ struct FWeightedParam
   public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UBodyPart> Condition;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float Weight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = 0, ClampMax = 100), meta = (Units = "Percent"))
+	int32 Weight;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UBodyPart> Reactor;
 

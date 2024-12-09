@@ -152,42 +152,53 @@ void UConnectorPart::GenerateDefaultPart(
 void UConnectorPart::GenerateRandomPart(
 	TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, EBodyPartType PartType, USkeletalMeshComponent* MeshRef)
 {
-	int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
-
+	int32	RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
 	UClass* LoadedRandom = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex].LoadSynchronous();
+	bool	PartUsed = false;
+	int32	RandWeight = 99;
 
 	for (int i = 0; i < WhiteListRef.Num(); i++)
 	{
 		if (WhiteListRef[i].GetConditionFilledState() && WhiteListRef[i].GetReactorBodyPartType() == PartType)
 		{
 			UE_LOG(
-				LogTemp, Warning, TEXT("Using %s, so should probably (%f) use %s"),
+				LogTemp, Warning, TEXT("Using %s, so should probably (%d) use %s"),
 				*WhiteListRef[i].Condition->GetFName().ToString(), WhiteListRef[i].Weight,
 				*WhiteListRef[i].Reactor->GetFName().ToString());
 			for (int j = 0; j < PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num(); j++)
 			{
-				//UE_LOG(
-				//	LogTemp, Warning, TEXT("ReactorClass : %s, CheckedClass : %s"),
-				//	*WhiteListRef[i].Reactor->GetDefaultObject()->GetFName().ToString(),
-				//	*PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->GetFName().ToString());
-
-				if (PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j] == LoadedRandom)
+				// UE_LOG(
+				//	LogTemp, Warning, TEXT("ArrayIter: %s, Reactor: %s"),
+				//	*PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->GetFName().ToString(),
+				//	*WhiteListRef[i].Reactor->GetFName().ToString());
+				if (WhiteListRef[i].Reactor->GetDefaultObject() ==
+					PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->GetDefaultObject())
 				{
 					UE_LOG(LogTemp, Warning, TEXT("Found part in possibility array"));
+					int32 oui = FMath::RandRange(0, RandWeight);
+					if (oui < WhiteListRef[i].Weight)
+					{
+						UE_LOG(LogTemp, Warning, TEXT("Using found part, dice roll was %d (roll on %d)"), oui, RandWeight);
+						PartUsed = true;
+						LoadedRandom = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].LoadSynchronous();
+					}
+					else
+					{
+						RandWeight -= WhiteListRef[i].Weight;
+					}
+					break;
 				}
+			}
+
+			if (PartUsed)
+			{
+				break;
 			}
 		}
 	}
 
 	if (LoadedRandom && PartType == EBodyPartType::INTERACTION)
 	{
-		//UInteractionPart* CastPart = Cast<UInteractionPart>(LoadedRandom);
-
-		//if (CastPart)
-		//{
-		//	MeshRef->SetSkeletalMesh(CastPart->GetSkeletalMeshAsset());
-		//	InteractionManagerRef->AddArrayElement(CastPart);
-		//}
 		MeshRef->SetSkeletalMesh(LoadedRandom->GetDefaultObject<UInteractionPart>()->GetSkeletalMeshAsset());
 
 		TObjectPtr<UInteractionPart> InteractionPartCreated =
