@@ -92,7 +92,6 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 			int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
 			LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]->StaticClass();
 			LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex].GetDefaultObject();
-			//bool  PartUsed = false;
 			int32 RandWeight = 99;
 
 			for (int i = 0; i < WhiteListRef.Num(); i++)
@@ -115,7 +114,6 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 							int32 oui = FMath::RandRange(0, RandWeight);
 							if (oui < WhiteListRef[i].GetReactorWeight(ReactorIndex))
 							{
-								//PartUsed = true;
 								LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->StaticClass();
 								LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject();
 							}
@@ -123,15 +121,9 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 							{
 								RandWeight -= WhiteListRef[i].GetReactorWeight(ReactorIndex);
 							}
-							// break;
 							goto SetMeshes;
 						}
 					}
-
-					// if (PartUsed)
-					//{
-					//	break;
-					// }
 				}
 			}
 		}
