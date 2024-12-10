@@ -92,41 +92,31 @@ void UConnectorPart::GenerateDefaultPart(
 
 	if (PartType == EBodyPartType::INTERACTION && LoadedDefault)
 	{
-		MeshRef->SetSkeletalMesh(PartsArray[ArrayIndex].DefaultPart->GetDefaultObject<UInteractionPart>()->GetSkeletalMeshAsset());
-
-		TObjectPtr<UInteractionPart> InteractionPartCreated =
-			Cast<UInteractionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, FTransform::Identity, false));
-		InteractionPartCreated->SetHiddenInGame(true);
-		InteractionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		TObjectPtr<UInteractionPart> InteractionPartCreated = Cast<UInteractionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, MeshRef->GetRelativeTransform(), false));
+		
 		if (InteractionPartCreated)
 		{
+			InteractionPartCreated->SetLeaderPoseComponent(this, false, false);
 			InteractionManagerRef->AddArrayElement(InteractionPartCreated);
 		}
 	}
 	else if (PartType == EBodyPartType::LOCOMOTION && LoadedDefault)
 	{
-		MeshRef->SetSkeletalMesh(PartsArray[ArrayIndex].DefaultPart->GetDefaultObject<ULocomotionPart>()->GetSkeletalMeshAsset());
-
-		TObjectPtr<ULocomotionPart> LocomotionPartCreated =
-			Cast<ULocomotionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, FTransform::Identity, false));
-
-		LocomotionPartCreated->SetHiddenInGame(true);
-		LocomotionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		TObjectPtr<ULocomotionPart> LocomotionPartCreated = Cast<ULocomotionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, MeshRef->GetRelativeTransform(), false));
+		
 		if (LocomotionPartCreated)
 		{
+			LocomotionPartCreated->SetLeaderPoseComponent(this, false, false);
 			LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
 		}
 	}
 	else if (PartType == EBodyPartType::PERCEPTION && LoadedDefault)
 	{
-		MeshRef->SetSkeletalMesh(PartsArray[ArrayIndex].DefaultPart->GetDefaultObject<UPerceptionPart>()->GetSkeletalMeshAsset());
+		TObjectPtr<UPerceptionPart> PerceptionPartCreated = Cast<UPerceptionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, MeshRef->GetRelativeTransform(), false));
 
-		TObjectPtr<UPerceptionPart> PerceptionPartCreated =
-			Cast<UPerceptionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, FTransform::Identity, false));
-		PerceptionPartCreated->SetHiddenInGame(true);
-		PerceptionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		if (PerceptionPartCreated)
 		{
+			PerceptionPartCreated->SetLeaderPoseComponent(this, false, false);
 			PerceptionManagerRef->AddArrayElement(PerceptionPartCreated);
 		}
 	}

@@ -69,4 +69,7 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	UFUNCTION()
 	void GenerateRandomPart(
 		TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, EBodyPartType PartType, USkeletalMeshComponent* MeshRef);
+	
+	void GenerateDefault(TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, UBodyPart BodyClass, USkeletalMeshComponent* MeshRef);
+	
 };
