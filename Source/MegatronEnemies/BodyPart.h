@@ -76,4 +76,9 @@ class MEGATRONENEMIES_API UBodyPart : public USkeletalMeshComponent
 	static bool IsConnector(UBodyPart* Part);
 	static bool IsPerception(UBodyPart* Part);
 	static bool IsLocomotion(UBodyPart* Part);
+
+	static bool IsInteraction(TSubclassOf<UBodyPart> Part);
+	static bool IsConnector(TSubclassOf<UBodyPart> Part);
+	static bool IsPerception(TSubclassOf<UBodyPart> Part);
+	static bool IsLocomotion(TSubclassOf<UBodyPart> Part);
 };

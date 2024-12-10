@@ -10,6 +10,7 @@
 #include "PerceptionManager.h"
 #include "PerceptionPart.h"
 #include "PossibleBodyParts.h"
+#include "GenerationParameters.h"
 
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
@@ -22,7 +23,6 @@ UConnectorPart::UConnectorPart()
 void UConnectorPart::InitializeComponent()
 {
 	Super::InitializeComponent();
-
 }
 
 void UConnectorPart::BeginPlay()
@@ -38,138 +38,145 @@ void UConnectorPart::BeginPlay()
 	if (OwnerCharacter->GetComponentByClass<UMegatronManager>())
 	{
 		UMegatronManager* MegatronManager = OwnerCharacter->GetComponentByClass<UMegatronManager>();
-		
+
 		LocomotionManagerRef = MegatronManager->GetLocomotion();
 		InteractionManagerRef = MegatronManager->GetInteraction();
 		PerceptionManagerRef = MegatronManager->GetPerception();
+
+		if (MegatronManager->GetGenParams())
+		{
+			WhiteListRef = MegatronManager->GetGenParams()->GetWhiteList();
+		}
 		// UE_LOG(LogTemp, Warning, TEXT("LocomotionManagerRef set for %s"), *this->GetFName().ToString());
 
 		if (bUseInteraction && InteractionParts.Num() > 0)
 		{
-			GenerateParts(InteractionParts, EBodyPartType::INTERACTION);
+			GenerateIndividualPart(InteractionParts, EBodyPartType::INTERACTION);
 		}
 		if (bUseLocomotion && LocomotionParts.Num() > 0)
 		{
-			GenerateParts(LocomotionParts, EBodyPartType::LOCOMOTION);
+			GenerateIndividualPart(LocomotionParts, EBodyPartType::LOCOMOTION);
 		}
 		if (bUsePerception && PerceptionParts.Num() > 0)
 		{
-			GenerateParts(PerceptionParts, EBodyPartType::PERCEPTION);
+			GenerateIndividualPart(PerceptionParts, EBodyPartType::PERCEPTION);
 		}
 
 		LocomotionManagerRef->OnConnectorInitialized();
 	}
 }
 
-void UConnectorPart::GenerateParts(TArray<FIndividualBodyPart> PartsArray, EBodyPartType PartType)
+void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArray, EBodyPartType PartType)
 {
-	for (int i = 0; i < PartsArray.Num(); i++)
+	for (int ArrayIndex = 0; ArrayIndex < PartsArray.Num(); ArrayIndex++)
 	{
-		USkeletalMeshComponent* Ref = Cast<USkeletalMeshComponent>(PartsArray[i].MeshReference.GetComponent(OwnerCharacter));
-		if (!Ref)
+		USkeletalMeshComponent* Ref =
+			Cast<USkeletalMeshComponent>(PartsArray[ArrayIndex].MeshReference.GetComponent(OwnerCharacter));
+		if (!Ref || !(PartsArray[ArrayIndex].DefaultPart || PartsArray[ArrayIndex].PossibleParts))
 		{
-			UE_LOG(LogTemp, Error, TEXT("No Ref"));
+			UE_LOG(LogTemp, Error, TEXT("No Ref or no element in PartsArray"));
+			return;
 		}
-		else if (PartsArray[i].DefaultPart)
+
+		UClass*	   LoadedPartClass;
+		UBodyPart* LoadedPart;
+
+		if (PartsArray[ArrayIndex].DefaultPart)
 		{
-			GenerateDefaultPart(PartsArray, i, PartType, Ref);
-		}
-		else if (PartsArray[i].PossibleParts)
-		{
-			GenerateRandomPart(PartsArray, i, PartType, Ref);
+			LoadedPartClass = PartsArray[ArrayIndex].DefaultPart->StaticClass();
+			LoadedPart = PartsArray[ArrayIndex].DefaultPart.GetDefaultObject();
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *PartsArray[ArrayIndex].DefaultPart.GetDefaultObject()->GetFName().ToString());
 		}
 		else
 		{
-			UE_LOG(LogTemp, Error, TEXT("No element in PartsArray"));
+			int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
+			LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]->StaticClass();
+			LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex].GetDefaultObject();
+			bool  PartUsed = false;
+			int32 RandWeight = 99;
+
+			for (int i = 0; i < WhiteListRef.Num(); i++)
+			{
+				if (WhiteListRef[i].GetConditionFilledState() && WhiteListRef[i].GetReactorBodyPartType() == PartType)
+				{
+					for (int j = 0; j < PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num(); j++)
+					{
+						if (WhiteListRef[i].Reactor->GetDefaultObject() ==
+							PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject())
+						{
+							int32 oui = FMath::RandRange(0, RandWeight);
+							if (oui < WhiteListRef[i].Weight)
+							{
+								PartUsed = true;
+								LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->StaticClass();
+								LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject();
+							}
+							else
+							{
+								RandWeight -= WhiteListRef[i].Weight;
+							}
+							break;
+						}
+					}
+
+					if (PartUsed)
+					{
+						break;
+					}
+				}
+			}
 		}
-	}
-}
 
-void UConnectorPart::GenerateDefaultPart(
-	TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, EBodyPartType PartType, USkeletalMeshComponent* MeshRef)
-{
-	UClass* LoadedDefault = PartsArray[ArrayIndex].DefaultPart.LoadSynchronous();
-
-	if (PartType == EBodyPartType::INTERACTION && LoadedDefault)
-	{
-		MeshRef->SetSkeletalMesh(PartsArray[ArrayIndex].DefaultPart->GetDefaultObject<UInteractionPart>()->GetSkeletalMeshAsset());
-
-		TObjectPtr<UInteractionPart> InteractionPartCreated =
-			Cast<UInteractionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, FTransform::Identity, false));
-		InteractionPartCreated->SetHiddenInGame(true);
-		InteractionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (InteractionPartCreated)
+		if (LoadedPartClass && PartType == EBodyPartType::INTERACTION)
 		{
-			InteractionManagerRef->AddArrayElement(InteractionPartCreated);
+			TObjectPtr<UInteractionPart> InteractionPartCreated = Cast<UInteractionPart>(LoadedPart);
+
+			Ref->SetSkeletalMesh(InteractionPartCreated->GetSkeletalMeshAsset());
+			InteractionPartCreated->SetHiddenInGame(true);
+			InteractionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			if (InteractionPartCreated)
+			{
+				InteractionManagerRef->AddArrayElement(InteractionPartCreated);
+			}
 		}
-	}
-	else if (PartType == EBodyPartType::LOCOMOTION && LoadedDefault)
-	{
-		MeshRef->SetSkeletalMesh(PartsArray[ArrayIndex].DefaultPart->GetDefaultObject<ULocomotionPart>()->GetSkeletalMeshAsset());
-
-		TObjectPtr<ULocomotionPart> LocomotionPartCreated =
-			Cast<ULocomotionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, FTransform::Identity, false));
-
-		LocomotionPartCreated->SetHiddenInGame(true);
-		LocomotionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (LocomotionPartCreated)
+		else if (LoadedPartClass && PartType == EBodyPartType::LOCOMOTION)
 		{
-			LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
-		}
-	}
-	else if (PartType == EBodyPartType::PERCEPTION && LoadedDefault)
-	{
-		MeshRef->SetSkeletalMesh(PartsArray[ArrayIndex].DefaultPart->GetDefaultObject<UPerceptionPart>()->GetSkeletalMeshAsset());
+			TObjectPtr<ULocomotionPart> LocomotionPartCreated = Cast<ULocomotionPart>(LoadedPart);
 
-		TObjectPtr<UPerceptionPart> PerceptionPartCreated =
-			Cast<UPerceptionPart>(GetOwner()->AddComponentByClass(LoadedDefault, false, FTransform::Identity, false));
-		PerceptionPartCreated->SetHiddenInGame(true);
-		PerceptionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (PerceptionPartCreated)
+			Ref->SetSkeletalMesh(LocomotionPartCreated->GetSkeletalMeshAsset());
+			LocomotionPartCreated->SetHiddenInGame(true);
+			LocomotionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			if (LocomotionPartCreated)
+			{
+				LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
+			}
+		}
+		else if (LoadedPartClass && PartType == EBodyPartType::PERCEPTION)
 		{
-			PerceptionManagerRef->AddArrayElement(PerceptionPartCreated);
+			TObjectPtr<UPerceptionPart> PerceptionPartCreated = Cast<UPerceptionPart>(LoadedPart);
+
+			Ref->SetSkeletalMesh(PerceptionPartCreated->GetSkeletalMeshAsset());
+			PerceptionPartCreated->SetHiddenInGame(true);
+			PerceptionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			if (PerceptionPartCreated)
+			{
+				PerceptionManagerRef->AddArrayElement(PerceptionPartCreated);
+			}
 		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Invalid DefaultPart"));
-	}
-}
-
-void UConnectorPart::GenerateRandomPart(
-	TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, EBodyPartType PartType, USkeletalMeshComponent* MeshRef)
-{
-	int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
-
-	MeshRef->SetSkeletalMesh(PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]->GetSkeletalMeshAsset());
-
-	if (PartType == EBodyPartType::INTERACTION)
-	{
-		UInteractionPart* CastPart = Cast<UInteractionPart>(PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]);
-		if (CastPart)
+		else
 		{
-			InteractionManagerRef->AddArrayElement(CastPart);
+			UE_LOG(LogTemp, Error, TEXT("Invalid Part"));
+			return;
 		}
-	}
-	else if (PartType == EBodyPartType::LOCOMOTION)
-	{
-		ULocomotionPart* CastPart = Cast<ULocomotionPart>(PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]);
-		if (CastPart)
+
+		for (int k = 0; k < WhiteListRef.Num(); k++)
 		{
-			LocomotionManagerRef->AddArrayElement(CastPart);
+			if (LoadedPartClass->StaticClass() == WhiteListRef[k].Condition->StaticClass() &&
+				!WhiteListRef[k].GetConditionFilledState())
+			{
+				WhiteListRef[k].SetConditionFilledState(true);
+			}
 		}
-	}
-	else if (PartType == EBodyPartType::PERCEPTION)
-	{
-		UPerceptionPart* CastPart = Cast<UPerceptionPart>(PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]);
-		 if (CastPart)
-		 {
-			PerceptionManagerRef->AddArrayElement(CastPart);
-		 }
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Invalid RandomPart"));
 	}
 }
 
