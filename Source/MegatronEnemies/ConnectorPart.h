@@ -16,7 +16,7 @@ struct FIndividualBodyPart
 	FComponentReference MeshReference;
 
 	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultPart"))
-	TSoftClassPtr<UBodyPart> DefaultPart;
+	TSubclassOf<UBodyPart> DefaultPart;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPossibleBodyParts> PossibleParts;
 

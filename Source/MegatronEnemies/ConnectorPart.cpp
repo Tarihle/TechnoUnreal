@@ -72,63 +72,66 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 	{
 		USkeletalMeshComponent* Ref =
 			Cast<USkeletalMeshComponent>(PartsArray[ArrayIndex].MeshReference.GetComponent(OwnerCharacter));
-		if (!Ref || (!PartsArray[ArrayIndex].DefaultPart && !PartsArray[ArrayIndex].PossibleParts))
+		if (!Ref || !(PartsArray[ArrayIndex].DefaultPart || PartsArray[ArrayIndex].PossibleParts))
 		{
 			UE_LOG(LogTemp, Error, TEXT("No Ref or no element in PartsArray"));
 			return;
 		}
 
-		UClass* LoadedPart;
+		UClass*	   LoadedPartClass;
+		UBodyPart* LoadedPart;
 
 		if (PartsArray[ArrayIndex].DefaultPart)
 		{
-			LoadedPart = PartsArray[ArrayIndex].DefaultPart.LoadSynchronous();
+			LoadedPartClass = PartsArray[ArrayIndex].DefaultPart->StaticClass();
+			LoadedPart = PartsArray[ArrayIndex].DefaultPart.GetDefaultObject();
+			UE_LOG(LogTemp, Warning, TEXT("%s"), *PartsArray[ArrayIndex].DefaultPart.GetDefaultObject()->GetFName().ToString());
 		}
 		else
 		{
 			int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
-			LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex].LoadSynchronous();
-		}
+			LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]->StaticClass();
+			LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex].GetDefaultObject();
+			bool  PartUsed = false;
+			int32 RandWeight = 99;
 
-		bool  PartUsed = false;
-		int32 RandWeight = 99;
-
-		for (int i = 0; i < WhiteListRef.Num(); i++)
-		{
-			if (WhiteListRef[i].GetConditionFilledState() && WhiteListRef[i].GetReactorBodyPartType() == PartType)
+			for (int i = 0; i < WhiteListRef.Num(); i++)
 			{
-				for (int j = 0; j < PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num(); j++)
+				if (WhiteListRef[i].GetConditionFilledState() && WhiteListRef[i].GetReactorBodyPartType() == PartType)
 				{
-					if (WhiteListRef[i].Reactor->GetDefaultObject() ==
-						PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->GetDefaultObject())
+					for (int j = 0; j < PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num(); j++)
 					{
-						int32 oui = FMath::RandRange(0, RandWeight);
-						if (oui < WhiteListRef[i].Weight)
+						if (WhiteListRef[i].Reactor->GetDefaultObject() ==
+							PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject())
 						{
-							PartUsed = true;
-							LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].LoadSynchronous();
+							int32 oui = FMath::RandRange(0, RandWeight);
+							if (oui < WhiteListRef[i].Weight)
+							{
+								PartUsed = true;
+								LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->StaticClass();
+								LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject();
+							}
+							else
+							{
+								RandWeight -= WhiteListRef[i].Weight;
+							}
+							break;
 						}
-						else
-						{
-							RandWeight -= WhiteListRef[i].Weight;
-						}
+					}
+
+					if (PartUsed)
+					{
 						break;
 					}
-				}
-
-				if (PartUsed)
-				{
-					break;
 				}
 			}
 		}
 
-		if (LoadedPart && PartType == EBodyPartType::INTERACTION)
+		if (LoadedPartClass && PartType == EBodyPartType::INTERACTION)
 		{
-			Ref->SetSkeletalMesh(LoadedPart->GetDefaultObject<UInteractionPart>()->GetSkeletalMeshAsset());
+			TObjectPtr<UInteractionPart> InteractionPartCreated = Cast<UInteractionPart>(LoadedPart);
 
-			TObjectPtr<UInteractionPart> InteractionPartCreated =
-				Cast<UInteractionPart>(GetOwner()->AddComponentByClass(LoadedPart, false, FTransform::Identity, false));
+			Ref->SetSkeletalMesh(InteractionPartCreated->GetSkeletalMeshAsset());
 			InteractionPartCreated->SetHiddenInGame(true);
 			InteractionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			if (InteractionPartCreated)
@@ -136,12 +139,11 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 				InteractionManagerRef->AddArrayElement(InteractionPartCreated);
 			}
 		}
-		else if (PartType == EBodyPartType::LOCOMOTION)
+		else if (LoadedPartClass && PartType == EBodyPartType::LOCOMOTION)
 		{
-			Ref->SetSkeletalMesh(LoadedPart->GetDefaultObject<ULocomotionPart>()->GetSkeletalMeshAsset());
+			TObjectPtr<ULocomotionPart> LocomotionPartCreated = Cast<ULocomotionPart>(LoadedPart);
 
-			TObjectPtr<ULocomotionPart> LocomotionPartCreated =
-				Cast<ULocomotionPart>(GetOwner()->AddComponentByClass(LoadedPart, false, FTransform::Identity, false));
+			Ref->SetSkeletalMesh(LocomotionPartCreated->GetSkeletalMeshAsset());
 			LocomotionPartCreated->SetHiddenInGame(true);
 			LocomotionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			if (LocomotionPartCreated)
@@ -149,12 +151,11 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 				LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
 			}
 		}
-		else if (PartType == EBodyPartType::PERCEPTION)
+		else if (LoadedPartClass && PartType == EBodyPartType::PERCEPTION)
 		{
-			Ref->SetSkeletalMesh(LoadedPart->GetDefaultObject<UPerceptionPart>()->GetSkeletalMeshAsset());
+			TObjectPtr<UPerceptionPart> PerceptionPartCreated = Cast<UPerceptionPart>(LoadedPart);
 
-			TObjectPtr<UPerceptionPart> PerceptionPartCreated =
-				Cast<UPerceptionPart>(GetOwner()->AddComponentByClass(LoadedPart, false, FTransform::Identity, false));
+			Ref->SetSkeletalMesh(PerceptionPartCreated->GetSkeletalMeshAsset());
 			PerceptionPartCreated->SetHiddenInGame(true);
 			PerceptionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 			if (PerceptionPartCreated)
@@ -170,7 +171,8 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 
 		for (int k = 0; k < WhiteListRef.Num(); k++)
 		{
-			if (LoadedPart->StaticClass() == WhiteListRef[k].Condition->StaticClass())
+			if (LoadedPartClass->StaticClass() == WhiteListRef[k].Condition->StaticClass() &&
+				!WhiteListRef[k].GetConditionFilledState())
 			{
 				WhiteListRef[k].SetConditionFilledState(true);
 			}
