@@ -13,8 +13,7 @@ struct FWeightedReactor
 	GENERATED_BODY()
 
   public:
-	UPROPERTY(
-		EditAnywhere, BlueprintReadWrite, meta = (ClampMin = 0, ClampMax = 100), meta = (Units = "Percent"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = 0, ClampMax = 100), meta = (Units = "Percent"))
 	int32 Weight;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UBodyPart> Reactor;
@@ -44,6 +43,20 @@ struct FWeightedParam
 	bool ConditionFilled = false;
 };
 
+USTRUCT(BlueprintType)
+struct FDefendedParam
+{
+	GENERATED_BODY()
+
+  public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UBodyPart> Condition;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<TSubclassOf<UBodyPart>> Reactions;
+
+	FDefendedParam();
+};
+
 /**
  *
  */
@@ -56,8 +69,11 @@ class MEGATRONENEMIES_API UGenerationParameters : public UPrimaryDataAsset
 	UGenerationParameters();
 
 	TArray<FWeightedParam> GetWhiteList();
+	TArray<FDefendedParam> GetBlackList();
 
   protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WhiteList)
 	TArray<FWeightedParam> WhiteList;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = WhiteList)
+	TArray<FDefendedParam> BlackList;
 };
