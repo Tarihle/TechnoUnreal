@@ -15,7 +15,7 @@ struct FIndividualBodyPart
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
 	FComponentReference MeshReference;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultPart"))
 	TSubclassOf<UBodyPart> DefaultPart;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPossibleBodyParts> PossibleParts;
@@ -36,10 +36,10 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	void InitializeComponent() override;
 
   protected:
-	TObjectPtr<class ACharacter>		 OwnerCharacter;
-	TObjectPtr<class ULocomotionManager> LocomotionManagerRef;
+	TObjectPtr<class ACharacter>		  OwnerCharacter;
+	TObjectPtr<class ULocomotionManager>  LocomotionManagerRef;
 	TObjectPtr<class UInteractionManager> InteractionManagerRef;
-	TObjectPtr<class UPerceptionManager> PerceptionManagerRef;
+	TObjectPtr<class UPerceptionManager>  PerceptionManagerRef;
 
 	TArray<class USkeletalMesh*> PossibleMeshes;
 
@@ -57,6 +57,8 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = BodyParts, meta = (EditCondition = "bUsePerception"))
 	TArray<FIndividualBodyPart> PerceptionParts;
 
+	TArray<struct FWeightedParam> WhiteListRef;
+
 	void BeginPlay() override;
 
 	/* These functions are basically the same, we separate them for usability and because we have 3 different
@@ -69,7 +71,7 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	UFUNCTION()
 	void GenerateRandomPart(
 		TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, EBodyPartType PartType, USkeletalMeshComponent* MeshRef);
-	
+
 	void GenerateDefault(TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, UBodyPart BodyClass, USkeletalMeshComponent* MeshRef);
-	
+
 };

@@ -27,6 +27,9 @@ class MEGATRONENEMIES_API UMegatronManager : public UActorComponent
 	UFUNCTION(BlueprintPure)
 	class UPerceptionManager* GetPerception();
 
+	UFUNCTION(BlueprintPure)
+	class UGenerationParameters* GetGenParams();
+
   protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -41,6 +44,9 @@ class MEGATRONENEMIES_API UMegatronManager : public UActorComponent
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Megatron, meta = (AllowPrivateAccess = "true"))
 	TArray<class UConnectorPart*> Connectors;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Megatron, meta  = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UGenerationParameters> GenerationParameters;
 
 	// TODO: add possible connectors
 

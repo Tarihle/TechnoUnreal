@@ -3,6 +3,11 @@
 #include "BodyPart.h"
 
 #include "MegatronTask.h"
+#include "InteractionPart.h"
+#include "LocomotionPart.h"
+#include "PerceptionPart.h"
+#include "ConnectorPart.h"
+
 #include "Kismet/KismetSystemLibrary.h"
 #include "UObject/Class.h"
 
@@ -64,6 +69,26 @@ void UBodyPart::InitializeComponent()
 bool UBodyPart::IsLocomotion(UBodyPart* Part)
 {
 	return Part->Type == EBodyPartType::LOCOMOTION;
+}
+
+bool UBodyPart::IsInteraction(TSubclassOf<UBodyPart> Part)
+{
+	return (Part->IsChildOf(UInteractionPart::StaticClass()));
+}
+
+bool UBodyPart::IsConnector(TSubclassOf<UBodyPart> Part)
+{
+	return (Part->IsChildOf(UConnectorPart::StaticClass()));
+}
+
+bool UBodyPart::IsPerception(TSubclassOf<UBodyPart> Part)
+{
+	return (Part->IsChildOf(UPerceptionPart::StaticClass()));
+}
+
+bool UBodyPart::IsLocomotion(TSubclassOf<UBodyPart> Part)
+{
+	return (Part->IsChildOf(ULocomotionPart::StaticClass()));
 }
 
 bool UBodyPart::IsConnector(UBodyPart* Part)
