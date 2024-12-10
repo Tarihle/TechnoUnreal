@@ -85,47 +85,51 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 		{
 			LoadedPartClass = PartsArray[ArrayIndex].DefaultPart->StaticClass();
 			LoadedPart = PartsArray[ArrayIndex].DefaultPart.GetDefaultObject();
-			UE_LOG(LogTemp, Warning, TEXT("%s"), *PartsArray[ArrayIndex].DefaultPart.GetDefaultObject()->GetFName().ToString());
+			UE_LOG(LogTemp, Display, TEXT("Using %s from default."), *LoadedPart->GetFName().ToString());
 		}
 		else
 		{
 			int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
 			LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]->StaticClass();
 			LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex].GetDefaultObject();
-			bool  PartUsed = false;
 			int32 RandWeight = 99;
 
 			for (int i = 0; i < WhiteListRef.Num(); i++)
 			{
-				if (WhiteListRef[i].GetConditionFilledState() && WhiteListRef[i].GetReactorBodyPartType() == PartType)
+				if (!WhiteListRef[i].GetConditionFilledState())
 				{
+					continue;
+				}
+				for (int ReactorIndex = 0; ReactorIndex < WhiteListRef[i].ReactorList.Num(); ReactorIndex++)
+				{
+					if (WhiteListRef[i].GetReactorBodyPartType(ReactorIndex) != PartType)
+					{
+						continue;
+					}
 					for (int j = 0; j < PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num(); j++)
 					{
-						if (WhiteListRef[i].Reactor->GetDefaultObject() ==
+						if (WhiteListRef[i].ReactorList[ReactorIndex].Reactor->GetDefaultObject() ==
 							PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject())
 						{
 							int32 oui = FMath::RandRange(0, RandWeight);
-							if (oui < WhiteListRef[i].Weight)
+							if (oui < WhiteListRef[i].GetReactorWeight(ReactorIndex))
 							{
-								PartUsed = true;
 								LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->StaticClass();
 								LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject();
+								UE_LOG(LogTemp, Display, TEXT("Using %s from WhiteList."), *LoadedPart->GetFName().ToString());
 							}
 							else
 							{
-								RandWeight -= WhiteListRef[i].Weight;
+								RandWeight -= WhiteListRef[i].GetReactorWeight(ReactorIndex);
 							}
-							break;
+							goto SetMeshes;
 						}
-					}
-
-					if (PartUsed)
-					{
-						break;
 					}
 				}
 			}
 		}
+
+	SetMeshes:
 
 		if (LoadedPartClass && PartType == EBodyPartType::INTERACTION)
 		{
@@ -171,10 +175,18 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 
 		for (int k = 0; k < WhiteListRef.Num(); k++)
 		{
-			if (LoadedPartClass->StaticClass() == WhiteListRef[k].Condition->StaticClass() &&
+			//UE_LOG(
+			//	LogTemp, Warning, TEXT("LoadedPartClass: %s, ConditionClass: %s"),
+			//	*LoadedPart->GetFName().ToString(),
+			//	*WhiteListRef[k].Condition->GetDefaultObject()->GetFName().ToString());
+
+			if (LoadedPart->GetFName() == WhiteListRef[k].Condition->GetDefaultObject()->GetFName() &&
 				!WhiteListRef[k].GetConditionFilledState())
 			{
 				WhiteListRef[k].SetConditionFilledState(true);
+				UE_LOG(
+					LogTemp, Display, TEXT("Validating condition in generation parameters for %s."),
+					*LoadedPart->GetFName().ToString());
 			}
 		}
 	}

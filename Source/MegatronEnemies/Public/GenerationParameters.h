@@ -8,6 +8,21 @@
 #include "GenerationParameters.generated.h"
 
 USTRUCT(BlueprintType)
+struct FWeightedReactor
+{
+	GENERATED_BODY()
+
+  public:
+	UPROPERTY(
+		EditAnywhere, BlueprintReadWrite, meta = (ClampMin = 0, ClampMax = 100), meta = (Units = "Percent"))
+	int32 Weight;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UBodyPart> Reactor;
+
+	FWeightedReactor();
+};
+
+USTRUCT(BlueprintType)
 struct FWeightedParam
 {
 	GENERATED_BODY()
@@ -15,16 +30,15 @@ struct FWeightedParam
   public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UBodyPart> Condition;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = 0, ClampMax = 100), meta = (Units = "Percent"))
-	int32 Weight;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UBodyPart> Reactor;
+	TArray<FWeightedReactor> ReactorList;
 
 	FWeightedParam();
 
-	bool GetConditionFilledState();
-	void SetConditionFilledState(bool State);
-	EBodyPartType GetReactorBodyPartType();
+	bool		  GetConditionFilledState();
+	void		  SetConditionFilledState(bool State);
+	EBodyPartType GetReactorBodyPartType(int Index);
+	int32		  GetReactorWeight(int Index);
 
   private:
 	bool ConditionFilled = false;
