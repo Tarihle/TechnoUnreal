@@ -11,7 +11,6 @@
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISense_Touch.h"
 
-
 void UPerceptionPart::InitializeComponent()
 {
 	Super::InitializeComponent();
@@ -38,7 +37,8 @@ bool UPerceptionPart::IsSenseEnabled(EPerceptionID Sense) const
 	case EPerceptionID::TOUCH:
 		return Constraints.bCanFeelTouch;
 
-	default: return false;
+	default:
+		return false;
 	}
 }
 
@@ -111,7 +111,8 @@ void UPerceptionPart::SetSenseEnabled(EPerceptionID Sense, bool bEnabled)
 		PerceptionComponent->SetSenseEnabled(UAISense_Touch::StaticClass(), bEnabled);
 		break;
 
-	default: break;
+	default:
+		break;
 	}
 }
 
@@ -138,13 +139,13 @@ void UPerceptionPart::BeginPlay()
 	 * This is called after UAIPerceptionComponent::RegisterSenseConfig when said component
 	 * has configs in its array at construction. Is it okay ? We'll see :)
 	 */
-	AIPerceptionSys->UpdateListener(*PerceptionComponent); 
+	AIPerceptionSys->UpdateListener(*PerceptionComponent);
 }
 
 TArray<class AActor*> UPerceptionPart::GetSensedActors(const TSubclassOf<class UAISense>& Sense) const
 {
 	TArray<AActor*> Perceived;
-	
+
 	PerceptionComponent->GetKnownPerceivedActors(Sense, Perceived);
 
 	return Perceived;
