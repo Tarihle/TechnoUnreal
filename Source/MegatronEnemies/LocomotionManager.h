@@ -65,7 +65,7 @@ class MEGATRONENEMIES_API ULocomotionManager : public UBasePartManager
 
 	int32 InitializedConnectorCount = 0;
 	int32 ConnectorCount = 0;
-
+	
 	bool bCanEverCrouch = true;
 	bool bCanEverJump = true;
 	bool bCanEverSprint = true;

@@ -88,7 +88,7 @@ void UConnectorPart::GenerateParts(TArray<FIndividualBodyPart> PartsArray, EBody
 void UConnectorPart::GenerateDefaultPart(
 	TArray<FIndividualBodyPart> PartsArray, int ArrayIndex, EBodyPartType PartType, USkeletalMeshComponent* MeshRef)
 {
-	UClass* LoadedDefault = PartsArray[ArrayIndex].DefaultPart.LoadSynchronous();
+	UClass* LoadedDefault = PartsArray[ArrayIndex].DefaultPart;
 
 	if (PartType == EBodyPartType::INTERACTION && LoadedDefault)
 	{

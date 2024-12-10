@@ -15,8 +15,8 @@ struct FIndividualBodyPart
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
 	FComponentReference MeshReference;
 
-	UPROPERTY(EditAnywhere, meta = (ForceRebuildProperty = "DefaultPart"))
-	TSoftClassPtr<UBodyPart> DefaultPart;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UBodyPart> DefaultPart;
 	UPROPERTY(EditAnywhere)
 	TObjectPtr<class UPossibleBodyParts> PossibleParts;
 
