@@ -92,40 +92,51 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 			int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
 			LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]->StaticClass();
 			LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex].GetDefaultObject();
-			bool  PartUsed = false;
+			//bool  PartUsed = false;
 			int32 RandWeight = 99;
 
 			for (int i = 0; i < WhiteListRef.Num(); i++)
 			{
-				if (WhiteListRef[i].GetConditionFilledState() && WhiteListRef[i].GetReactorBodyPartType() == PartType)
+				if (!WhiteListRef[i].GetConditionFilledState())
 				{
+					continue;
+				}
+				for (int ReactorIndex = 0; ReactorIndex < WhiteListRef[i].ReactorList.Num(); ReactorIndex++)
+				{
+					if (WhiteListRef[i].GetReactorBodyPartType(ReactorIndex) != PartType)
+					{
+						continue;
+					}
 					for (int j = 0; j < PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num(); j++)
 					{
-						if (WhiteListRef[i].Reactor->GetDefaultObject() ==
+						if (WhiteListRef[i].ReactorList[ReactorIndex].Reactor->GetDefaultObject() ==
 							PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject())
 						{
 							int32 oui = FMath::RandRange(0, RandWeight);
-							if (oui < WhiteListRef[i].Weight)
+							if (oui < WhiteListRef[i].GetReactorWeight(ReactorIndex))
 							{
-								PartUsed = true;
+								//PartUsed = true;
 								LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->StaticClass();
 								LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject();
 							}
 							else
 							{
-								RandWeight -= WhiteListRef[i].Weight;
+								RandWeight -= WhiteListRef[i].GetReactorWeight(ReactorIndex);
 							}
-							break;
+							// break;
+							goto SetMeshes;
 						}
 					}
 
-					if (PartUsed)
-					{
-						break;
-					}
+					// if (PartUsed)
+					//{
+					//	break;
+					// }
 				}
 			}
 		}
+
+	SetMeshes:
 
 		if (LoadedPartClass && PartType == EBodyPartType::INTERACTION)
 		{

@@ -27,20 +27,29 @@ void FWeightedParam::SetConditionFilledState(bool State)
 	ConditionFilled = State;
 }
 
-EBodyPartType FWeightedParam::GetReactorBodyPartType()
+EBodyPartType FWeightedParam::GetReactorBodyPartType(int Index)
 {
-	if (UBodyPart::IsInteraction(Reactor))
+	if (UBodyPart::IsInteraction(ReactorList[Index].Reactor))
 	{
 		return EBodyPartType::INTERACTION;
 	}
-	else if (UBodyPart::IsLocomotion(Reactor))
+	else if (UBodyPart::IsLocomotion(ReactorList[Index].Reactor))
 	{
 		return EBodyPartType::LOCOMOTION;
 	}
-	else if (UBodyPart::IsPerception(Reactor))
+	else if (UBodyPart::IsPerception(ReactorList[Index].Reactor))
 	{
 		return EBodyPartType::PERCEPTION;
 	}
 
 	return EBodyPartType::INVALID;
+}
+
+int32 FWeightedParam::GetReactorWeight(int Index)
+{
+	return ReactorList[Index].Weight;
+}
+
+FWeightedReactor::FWeightedReactor()
+{
 }
