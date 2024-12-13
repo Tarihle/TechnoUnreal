@@ -38,7 +38,7 @@ protected:
 	UPROPERTY()
 	TObjectPtr<class ACharacter>   OwnerCharacter;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	TArray<UBodyPart*>			    SelectedBodyParts;
 };
 
