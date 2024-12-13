@@ -103,14 +103,18 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 		if (PartsArray[ArrayIndex].DefaultPart)
 		{
 			LoadedPartClass = PartsArray[ArrayIndex].DefaultPart->StaticClass();
-			LoadedPart = PartsArray[ArrayIndex].DefaultPart.GetDefaultObject();
-			UE_LOG(LogTemp, Display, TEXT("Using %s from default."), *LoadedPart->GetFName().ToString());
+			LoadedPart = dynamic_cast<UBodyPart*>(
+				OwnerCharacter->AddComponentByClass(PartsArray[ArrayIndex].DefaultPart, false, OwnerCharacter->GetTransform(), false));
+			UE_LOG(LogTemp, Display, TEXT("%s"), *PartsArray[ArrayIndex].DefaultPart.GetDefaultObject()->GetFName().ToString());
 		}
 		else
 		{
 			int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
 			LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]->StaticClass();
-			LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex].GetDefaultObject();
+			LoadedPart = dynamic_cast<UBodyPart*>(
+				OwnerCharacter->AddComponentByClass(PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex],
+					false, OwnerCharacter->GetTransform(), false));
+			bool  PartUsed = false;
 			int32 RandWeight = 99;
 
 			for (int i = 0; i < WhiteListRef.Num(); i++)
@@ -134,7 +138,9 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 							if (oui < WhiteListRef[i].GetReactorWeight(ReactorIndex))
 							{
 								LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->StaticClass();
-								LoadedPart = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject();
+								LoadedPart = dynamic_cast<UBodyPart*>(
+								OwnerCharacter->AddComponentByClass(PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j],
+									false, OwnerCharacter->GetTransform(), false));
 								UE_LOG(LogTemp, Display, TEXT("Using %s from WhiteList."), *LoadedPart->GetFName().ToString());
 							}
 							else

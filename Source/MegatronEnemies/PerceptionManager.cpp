@@ -2,6 +2,9 @@
 
 #include "PerceptionManager.h"
 
+#include "PerceptionPart.h"
+#include "GameFramework/Actor.h"
+
 // Sets default values for this component's properties
 UPerceptionManager::UPerceptionManager()
 {
@@ -26,4 +29,56 @@ void UPerceptionManager::TickComponent(float DeltaTime, ELevelTick TickType, FAc
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+}
+
+TArray<AActor*> UPerceptionManager::GetAllPerceivedActors()
+{
+	TArray<AActor*> Result;
+
+	for (UBodyPart* Part : SelectedBodyParts)
+	{
+		if (UPerceptionPart* Head = dynamic_cast<UPerceptionPart*>(Part))
+			Result.Append(Head->GetAllPerceivedActors());
+	}
+
+	return Result;
+}
+
+TArray<AActor*> UPerceptionManager::GetTouchedActors()
+{
+	TArray<AActor*> Result;
+
+	for (UBodyPart* Part : SelectedBodyParts)
+	{
+		if (UPerceptionPart* Head = dynamic_cast<UPerceptionPart*>(Part))
+			Result.Append(Head->GetTouchedActors());
+	}
+
+	return Result;
+}
+
+TArray<AActor*> UPerceptionManager::GetHeardActors()
+{
+	TArray<AActor*> Result;
+
+	for (UBodyPart* Part : SelectedBodyParts)
+	{
+		if (UPerceptionPart* Head = dynamic_cast<UPerceptionPart*>(Part))
+			Result.Append(Head->GetHeardActors());
+	}
+
+	return Result;
+}
+
+TArray<AActor*> UPerceptionManager::GetSeenActors()
+{
+	TArray<AActor*> Result;
+
+	for (UBodyPart* Part : SelectedBodyParts)
+	{
+		if (UPerceptionPart* Head = dynamic_cast<UPerceptionPart*>(Part))
+			Result.Append(Head->GetSeenActors());
+	}
+
+	return Result;
 }
