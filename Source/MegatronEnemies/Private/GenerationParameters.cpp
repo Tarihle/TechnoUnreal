@@ -62,3 +62,13 @@ FWeightedReactor::FWeightedReactor()
 FDefendedParam::FDefendedParam()
 {
 }
+
+bool FDefendedParam::GetConditionFilledState()
+{
+	return ConditionFilled;
+}
+
+void FDefendedParam::SetConditionFilledState(bool State)
+{
+	ConditionFilled = State;
+}

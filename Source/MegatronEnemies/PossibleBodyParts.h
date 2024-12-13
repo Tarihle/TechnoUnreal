@@ -20,8 +20,15 @@ class MEGATRONENEMIES_API UPossibleBodyParts : public UPrimaryDataAsset
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = BodyParts)
 	TArray<TSubclassOf<UBodyPart>> BodyPartsArray;
 
+	int32 TrueSize = 0;
+
   public:
 	UPossibleBodyParts();
+	virtual void PostLoad() override;
 
 	TArray<TSubclassOf<UBodyPart>> GetPartArray();
+	int							   ContainsByName(TSubclassOf<UBodyPart> Part);
+	bool						   RemoveByName(TSubclassOf<UBodyPart> Part);
+	int							   GetArraySize();
+	void						   ReinitArraySize();
 };

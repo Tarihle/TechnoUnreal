@@ -55,6 +55,12 @@ struct FDefendedParam
 	TArray<TSubclassOf<UBodyPart>> Reactions;
 
 	FDefendedParam();
+
+	bool GetConditionFilledState();
+	void SetConditionFilledState(bool State);
+
+  private:
+	bool ConditionFilled = false;
 };
 
 /**
