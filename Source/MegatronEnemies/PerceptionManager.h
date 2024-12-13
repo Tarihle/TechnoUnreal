@@ -23,4 +23,16 @@ class MEGATRONENEMIES_API UPerceptionManager : public UBasePartManager
   public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintPure)
+	TArray<class AActor*>	GetAllPerceivedActors();
+
+	UFUNCTION(BlueprintPure)
+	TArray<class AActor*> GetSeenActors();
+
+	UFUNCTION(BlueprintPure)
+	TArray<class AActor*> GetHeardActors();
+
+	UFUNCTION(BlueprintPure)
+	TArray<class AActor*> GetTouchedActors();
 };
