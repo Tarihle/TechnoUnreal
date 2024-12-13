@@ -65,9 +65,16 @@ class MEGATRONENEMIES_API ULocomotionManager : public UBasePartManager
 
 	int32 InitializedConnectorCount = 0;
 	int32 ConnectorCount = 0;
-	
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	bool bCanEverCrouch = true;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	bool bCanEverJump = true;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	bool bCanEverSprint = true;
+
+	UPROPERTY(BlueprintReadOnly, meta = (AllowPrivateAccess = true))
 	bool bCanEverWalk = true;
 };
