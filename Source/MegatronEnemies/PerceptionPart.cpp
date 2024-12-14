@@ -21,11 +21,17 @@ void UPerceptionPart::InitializeComponent()
 		PerceptionComponent = dynamic_cast<UAIPerceptionComponent*>(Component);
 	}
 
-	checkf(PerceptionComponent, TEXT("No AI Perception Component found in owner pawn"));
+	if (!PerceptionComponent)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No AI Perception Component found in owner pawn"));
+	}
 }
 
 bool UPerceptionPart::IsSenseEnabled(EPerceptionID Sense) const
 {
+	if (!PerceptionComponent)
+		return false;
+	
 	switch (Sense)
 	{
 	case EPerceptionID::SIGHT:
@@ -94,6 +100,9 @@ TArray<class AActor*> UPerceptionPart::GetTouchedActors() const
 
 void UPerceptionPart::SetSenseEnabled(EPerceptionID Sense, bool bEnabled)
 {
+	if (!PerceptionComponent)
+		return;
+	
 	switch (Sense)
 	{
 	case EPerceptionID::SIGHT:
@@ -120,6 +129,9 @@ void UPerceptionPart::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!PerceptionComponent)
+		return;
+
 	/* In UE 5.4, UpdateListener is only called if the PerceptionComponent has sense configs in
 	 its array right after construction. This might not be the case if all configs are stored
 	 in perception parts, so we update it manually to have a valid Listener ID */
@@ -144,6 +156,9 @@ void UPerceptionPart::BeginPlay()
 
 TArray<class AActor*> UPerceptionPart::GetSensedActors(const TSubclassOf<class UAISense>& Sense) const
 {
+	if (!PerceptionComponent)
+		return TArray<AActor*>();
+	
 	TArray<AActor*> Perceived;
 
 	PerceptionComponent->GetKnownPerceivedActors(Sense, Perceived);
