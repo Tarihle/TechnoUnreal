@@ -11,6 +11,11 @@
 #include "Perception/AISense_Sight.h"
 #include "Perception/AISense_Touch.h"
 
+UPerceptionPart::UPerceptionPart()
+{
+	Type = EBodyPartType::PERCEPTION;
+}
+
 void UPerceptionPart::InitializeComponent()
 {
 	Super::InitializeComponent();
