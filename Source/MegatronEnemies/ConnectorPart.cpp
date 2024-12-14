@@ -43,9 +43,10 @@ void UConnectorPart::BeginPlay()
 		InteractionManagerRef = MegatronManager->GetInteraction();
 		PerceptionManagerRef = MegatronManager->GetPerception();
 
-		if (MegatronManager->GetGenParams())
+		if (UGenerationParameters* GenParams = MegatronManager->GetGenParams())
 		{
-			WhiteListRef = MegatronManager->GetGenParams()->GetWhiteList();
+			WhiteListRef = GenParams->GetWhiteList();
+			BlackListRef = GenParams->GetBlackList();
 		}
 		// UE_LOG(LogTemp, Warning, TEXT("LocomotionManagerRef set for %s"), *this->GetFName().ToString());
 
@@ -63,6 +64,24 @@ void UConnectorPart::BeginPlay()
 		}
 
 		LocomotionManagerRef->OnConnectorInitialized();
+	}
+}
+
+void UConnectorPart::EndPlay(EEndPlayReason::Type Reason)
+{
+	Super::EndPlay(Reason);
+
+	if (bUseInteraction && InteractionParts.Num() > 0)
+	{
+		ReinitPossibleParts(InteractionParts);
+	}
+	if (bUseLocomotion && LocomotionParts.Num() > 0)
+	{
+		ReinitPossibleParts(LocomotionParts);
+	}
+	if (bUsePerception && PerceptionParts.Num() > 0)
+	{
+		ReinitPossibleParts(PerceptionParts);
 	}
 }
 
@@ -110,7 +129,7 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 					{
 						continue;
 					}
-					for (int j = 0; j < PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num(); j++)
+					for (int j = 0; j < PartsArray[ArrayIndex].PossibleParts->GetArraySize(); j++)
 					{
 						if (WhiteListRef[i].ReactorList[ReactorIndex].Reactor->GetDefaultObject() ==
 							PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject())
@@ -179,21 +198,88 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 			return;
 		}
 
-		for (int k = 0; k < WhiteListRef.Num(); k++)
-		{
-			//UE_LOG(
-			//	LogTemp, Warning, TEXT("LoadedPartClass: %s, ConditionClass: %s"),
-			//	*LoadedPart->GetFName().ToString(),
-			//	*WhiteListRef[k].Condition->GetDefaultObject()->GetFName().ToString());
+		ValidateListsCondition(LoadedPart);
+	}
+}
 
-			if (LoadedPart->GetFName() == WhiteListRef[k].Condition->GetDefaultObject()->GetFName() &&
-				!WhiteListRef[k].GetConditionFilledState())
+void UConnectorPart::ReinitPossibleParts(TArray<FIndividualBodyPart> PartsArray)
+{
+	for (FIndividualBodyPart Part : PartsArray)
+	{
+		if (Part.PossibleParts)
+		{
+			Part.PossibleParts->ReinitArraySize();
+		}
+	}
+}
+
+void UConnectorPart::RemoveBlackListedParts(int ArrayIndex)
+{
+	for (TSubclassOf<UBodyPart> BodyPart : BlackListRef[ArrayIndex].Reactions)
+	{
+		if (!BodyPart)
+		{
+			continue;
+		}
+		if (UBodyPart::IsInteraction(BodyPart))
+		{
+			for (FIndividualBodyPart Interaction : InteractionParts)
 			{
-				WhiteListRef[k].SetConditionFilledState(true);
-				UE_LOG(
-					LogTemp, Display, TEXT("Validating condition in generation parameters for %s."),
-					*LoadedPart->GetFName().ToString());
+				if (Interaction.PossibleParts && Interaction.PossibleParts->RemoveByName(BodyPart))
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Successfully removed %s from InteractionParts"), *BodyPart->GetFName().ToString());
+				}
 			}
+		}
+		else if (UBodyPart::IsLocomotion(BodyPart))
+		{
+			for (FIndividualBodyPart Locomotion : LocomotionParts)
+			{
+				if (Locomotion.PossibleParts && Locomotion.PossibleParts->RemoveByName(BodyPart))
+				{
+					UE_LOG(
+						LogTemp, Warning, TEXT("Successfully removed %s from LocomotionParts"), *BodyPart->GetFName().ToString());
+				}
+			}
+		}
+		else if (UBodyPart::IsPerception(BodyPart))
+		{
+			for (FIndividualBodyPart Perception : PerceptionParts)
+			{
+				if (Perception.PossibleParts && Perception.PossibleParts->RemoveByName(BodyPart))
+				{
+					UE_LOG(
+						LogTemp, Warning, TEXT("Successfully removed %s from PerceptionParts"), *BodyPart->GetFName().ToString());
+				}
+			}
+		}
+	}
+}
+
+void UConnectorPart::ValidateListsCondition(UBodyPart* LoadedPart)
+{
+	for (int k = 0; k < WhiteListRef.Num(); k++)
+	{
+		if (LoadedPart->GetFName() == WhiteListRef[k].Condition->GetDefaultObject()->GetFName() &&
+			!WhiteListRef[k].GetConditionFilledState())
+		{
+			WhiteListRef[k].SetConditionFilledState(true);
+			UE_LOG(
+				LogTemp, Display, TEXT("Validating condition in generation parameters for %s (whitelist)."),
+				*LoadedPart->GetFName().ToString());
+		}
+	}
+
+	for (int l = 0; l < BlackListRef.Num(); l++)
+	{
+		if (LoadedPart->GetFName() == BlackListRef[l].Condition->GetDefaultObject()->GetFName() &&
+			!BlackListRef[l].GetConditionFilledState())
+		{
+			RemoveBlackListedParts(l);
+			BlackListRef[l].SetConditionFilledState(true);
+			UE_LOG(
+				LogTemp, Display, TEXT("Validating condition in generation parameters for %s (blacklist)."),
+				*LoadedPart->GetFName().ToString());
 		}
 	}
 }

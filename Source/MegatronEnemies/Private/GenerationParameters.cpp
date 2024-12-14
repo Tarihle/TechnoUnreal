@@ -13,6 +13,11 @@ TArray<FWeightedParam> UGenerationParameters::GetWhiteList()
 	return WhiteList;
 }
 
+TArray<FDefendedParam> UGenerationParameters::GetBlackList()
+{
+	return BlackList;
+}
+
 FWeightedParam::FWeightedParam()
 {
 }
@@ -52,4 +57,18 @@ int32 FWeightedParam::GetReactorWeight(int Index)
 
 FWeightedReactor::FWeightedReactor()
 {
+}
+
+FDefendedParam::FDefendedParam()
+{
+}
+
+bool FDefendedParam::GetConditionFilledState()
+{
+	return ConditionFilled;
+}
+
+void FDefendedParam::SetConditionFilledState(bool State)
+{
+	ConditionFilled = State;
 }

@@ -58,11 +58,14 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	TArray<FIndividualBodyPart> PerceptionParts;
 
 	TArray<struct FWeightedParam> WhiteListRef;
+	TArray<struct FDefendedParam> BlackListRef;
 
 	void BeginPlay() override;
+	void EndPlay(EEndPlayReason::Type Reason) override;
 
-	/* These functions are basically the same, we separate them for usability and because we have 3 different
-	 * "IndividualPart" structs */
 	UFUNCTION()
 	void GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArray, EBodyPartType PartType);
+	void ReinitPossibleParts(TArray<FIndividualBodyPart> PartsArray);
+	void RemoveBlackListedParts(int ArrayIndex);
+	void ValidateListsCondition(UBodyPart* LoadedPart);
 };
