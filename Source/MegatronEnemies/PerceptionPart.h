@@ -40,6 +40,8 @@ class MEGATRONENEMIES_API UPerceptionPart : public UBodyPart
 	GENERATED_BODY()
 
 public:
+
+	UPerceptionPart();
 	
 	virtual void InitializeComponent() override;
 
