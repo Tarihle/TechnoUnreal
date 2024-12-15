@@ -163,6 +163,7 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 			Ref->SetSkeletalMesh(InteractionPartCreated->GetSkeletalMeshAsset());
 			InteractionPartCreated->SetHiddenInGame(true);
 			InteractionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			InteractionPartCreated->RefMeshComponent = Ref;
 			if (InteractionPartCreated)
 			{
 				InteractionManagerRef->AddArrayElement(InteractionPartCreated);
@@ -175,6 +176,7 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 			Ref->SetSkeletalMesh(LocomotionPartCreated->GetSkeletalMeshAsset());
 			LocomotionPartCreated->SetHiddenInGame(true);
 			LocomotionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			LocomotionPartCreated->RefMeshComponent = Ref;
 			if (LocomotionPartCreated)
 			{
 				LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
@@ -187,6 +189,7 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 			Ref->SetSkeletalMesh(PerceptionPartCreated->GetSkeletalMeshAsset());
 			PerceptionPartCreated->SetHiddenInGame(true);
 			PerceptionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+			PerceptionPartCreated->RefMeshComponent = Ref;
 			if (PerceptionPartCreated)
 			{
 				PerceptionManagerRef->AddArrayElement(PerceptionPartCreated);
