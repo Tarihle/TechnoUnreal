@@ -15,6 +15,8 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "GameFramework/Character.h"
 
+unsigned int Usage = 0b0;
+
 UConnectorPart::UConnectorPart()
 {
 	Type = EBodyPartType::CONNECTOR;
@@ -48,19 +50,87 @@ void UConnectorPart::BeginPlay()
 			WhiteListRef = GenParams->GetWhiteList();
 			BlackListRef = GenParams->GetBlackList();
 		}
-		// UE_LOG(LogTemp, Warning, TEXT("LocomotionManagerRef set for %s"), *this->GetFName().ToString());
+
+		unsigned int TotalPartNumber = 0;
 
 		if (bUseInteraction && InteractionParts.Num() > 0)
 		{
-			GenerateIndividualPart(InteractionParts, EBodyPartType::INTERACTION);
+			Usage += USEINTERACTION;
+			TotalPartNumber += InteractionParts.Num();
 		}
 		if (bUseLocomotion && LocomotionParts.Num() > 0)
 		{
-			GenerateIndividualPart(LocomotionParts, EBodyPartType::LOCOMOTION);
+			Usage += USELOCOMOTION;
+			TotalPartNumber += LocomotionParts.Num();
 		}
 		if (bUsePerception && PerceptionParts.Num() > 0)
 		{
-			GenerateIndividualPart(PerceptionParts, EBodyPartType::PERCEPTION);
+			Usage += USEPERCEPTION;
+			TotalPartNumber += PerceptionParts.Num();
+		}
+
+		for (unsigned int i = 0; i < TotalPartNumber; i++)
+		{
+			if (Usage == 0b000)
+			{
+				break;
+			}
+			int32 RGN = -1;
+			switch (Usage)
+			{
+			case 0b111:
+				RGN = FMath::RandRange(0, 2);
+				break;
+			case 0b001:
+				RGN = 0;
+				break;
+			case 0b010:
+				RGN = 1;
+				break;
+			case 0b100:
+				RGN = 2;
+				break;
+			case 0b011:
+				RGN = FMath::RandRange(0, 1);
+				break;
+			case 0b110:
+				RGN = FMath::RandRange(1, 2);
+				break;
+			case 0b101:
+				int temp = FMath::RandRange(0, 3);
+				temp = temp % 2;
+				if (temp == 1)
+				{
+					temp += 1;
+				}
+				RGN = temp;
+				break;
+			}
+
+			switch (RGN)
+			{
+			case 0:
+				GenerateIndividualPart(InteractionParts, EBodyPartType::INTERACTION, InteractionArrayIndex);
+				if (InteractionArrayIndex == InteractionParts.Num())
+				{
+					Usage -= USEINTERACTION;
+				}
+				break;
+			case 1:
+				GenerateIndividualPart(LocomotionParts, EBodyPartType::LOCOMOTION, LocomotionArrayIndex);
+				if (LocomotionArrayIndex == LocomotionParts.Num())
+				{
+					Usage -= USELOCOMOTION;
+				}
+				break;
+			case 2:
+				GenerateIndividualPart(PerceptionParts, EBodyPartType::PERCEPTION, PerceptionArrayIndex);
+				if (PerceptionArrayIndex == PerceptionParts.Num())
+				{
+					Usage -= USEPERCEPTION;
+				}
+				break;
+			}
 		}
 
 		LocomotionManagerRef->OnConnectorInitialized();
@@ -85,113 +155,71 @@ void UConnectorPart::EndPlay(EEndPlayReason::Type Reason)
 	}
 }
 
-void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArray, EBodyPartType PartType)
+void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArray, EBodyPartType PartType, int& ArrayIndex)
 {
-	for (int ArrayIndex = 0; ArrayIndex < PartsArray.Num(); ArrayIndex++)
+	if (!(PartsArray[ArrayIndex].DefaultPart || PartsArray[ArrayIndex].PossibleParts))
 	{
-		if (!(PartsArray[ArrayIndex].DefaultPart || PartsArray[ArrayIndex].PossibleParts))
-		{
-			UE_LOG(LogTemp, Error, TEXT("No Ref or no element in PartsArray"));
-			return;
-		}
+		UE_LOG(LogTemp, Error, TEXT("No Ref or no element in PartsArray"));
+		return;
+	}
 
-		UClass*	   LoadedPartClass;
-		UBodyPart* LoadedPart;
+	UBodyPart* LoadedPart;
 
-		if (PartsArray[ArrayIndex].DefaultPart)
-		{
-			LoadedPartClass = PartsArray[ArrayIndex].DefaultPart->StaticClass();
-			LoadedPart = dynamic_cast<UBodyPart*>(OwnerCharacter->AddComponentByClass(
-				PartsArray[ArrayIndex].DefaultPart, false, this->GetRelativeTransform(), false));
-			UE_LOG(LogTemp, Display, TEXT("%s"), *PartsArray[ArrayIndex].DefaultPart.GetDefaultObject()->GetFName().ToString());
-		}
-		else
-		{
-			int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
-			LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]->StaticClass();
-			LoadedPart = dynamic_cast<UBodyPart*>(OwnerCharacter->AddComponentByClass(
-				PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex], false, this->GetRelativeTransform(),
-				false));
-			bool  PartUsed = false;
-			int32 RandWeight = 99;
+	if (PartsArray[ArrayIndex].DefaultPart)
+	{
+		LoadedPart = dynamic_cast<UBodyPart*>(
+			OwnerCharacter->AddComponentByClass(PartsArray[ArrayIndex].DefaultPart, false, this->GetRelativeTransform(), false));
+		UE_LOG(LogTemp, Display, TEXT("%s"), *PartsArray[ArrayIndex].DefaultPart.GetDefaultObject()->GetFName().ToString());
+	}
+	else
+	{
+		bool  PartUsed = false;
+		int32 RandWeight = 99;
 
-			for (int i = 0; i < WhiteListRef.Num(); i++)
+		for (int i = 0; i < WhiteListRef.Num(); i++)
+		{
+			if (!WhiteListRef[i].GetConditionFilledState())
 			{
-				if (!WhiteListRef[i].GetConditionFilledState())
+				continue;
+			}
+			for (int ReactorIndex = 0; ReactorIndex < WhiteListRef[i].ReactorList.Num(); ReactorIndex++)
+			{
+				if (WhiteListRef[i].GetReactorBodyPartType(ReactorIndex) != PartType)
 				{
 					continue;
 				}
-				for (int ReactorIndex = 0; ReactorIndex < WhiteListRef[i].ReactorList.Num(); ReactorIndex++)
+				for (int j = 0; j < PartsArray[ArrayIndex].PossibleParts->GetArraySize(); j++)
 				{
-					if (WhiteListRef[i].GetReactorBodyPartType(ReactorIndex) != PartType)
+					if (WhiteListRef[i].ReactorList[ReactorIndex].Reactor->GetDefaultObject() ==
+						PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject())
 					{
-						continue;
-					}
-					for (int j = 0; j < PartsArray[ArrayIndex].PossibleParts->GetArraySize(); j++)
-					{
-						if (WhiteListRef[i].ReactorList[ReactorIndex].Reactor->GetDefaultObject() ==
-							PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j].GetDefaultObject())
+						int32 oui = FMath::RandRange(0, RandWeight);
+						if (oui < WhiteListRef[i].GetReactorWeight(ReactorIndex))
 						{
-							int32 oui = FMath::RandRange(0, RandWeight);
-							if (oui < WhiteListRef[i].GetReactorWeight(ReactorIndex))
-							{
-								LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->StaticClass();
-								LoadedPart = dynamic_cast<UBodyPart*>(OwnerCharacter->AddComponentByClass(
-									PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j], false,
-									this->GetRelativeTransform(), false));
-								UE_LOG(LogTemp, Display, TEXT("Using %s from WhiteList."), *LoadedPart->GetFName().ToString());
-							}
-							else
-							{
-								RandWeight -= WhiteListRef[i].GetReactorWeight(ReactorIndex);
-							}
-							goto SetMeshes;
+							LoadedPart = dynamic_cast<UBodyPart*>(OwnerCharacter->AddComponentByClass(
+								PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j], false, this->GetRelativeTransform(),
+								false));
+							UE_LOG(LogTemp, Display, TEXT("Using %s from WhiteList."), *LoadedPart->GetFName().ToString());
+							SetMeshes(LoadedPart, PartType);
+							++ArrayIndex;
+							return;
+						}
+						else
+						{
+							RandWeight -= WhiteListRef[i].GetReactorWeight(ReactorIndex);
 						}
 					}
 				}
 			}
 		}
 
-	SetMeshes:
-
-		if (LoadedPartClass && PartType == EBodyPartType::INTERACTION)
-		{
-			TObjectPtr<UInteractionPart> InteractionPartCreated = Cast<UInteractionPart>(LoadedPart);
-
-			InteractionPartCreated->SetLeaderPoseComponent(this);
-			if (InteractionPartCreated)
-			{
-				InteractionManagerRef->AddArrayElement(InteractionPartCreated);
-			}
-		}
-		else if (LoadedPartClass && PartType == EBodyPartType::LOCOMOTION)
-		{
-			TObjectPtr<ULocomotionPart> LocomotionPartCreated = Cast<ULocomotionPart>(LoadedPart);
-
-			LocomotionPartCreated->SetLeaderPoseComponent(this);
-			if (LocomotionPartCreated)
-			{
-				LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
-			}
-		}
-		else if (LoadedPartClass && PartType == EBodyPartType::PERCEPTION)
-		{
-			TObjectPtr<UPerceptionPart> PerceptionPartCreated = Cast<UPerceptionPart>(LoadedPart);
-
-			PerceptionPartCreated->SetLeaderPoseComponent(this);
-			if (PerceptionPartCreated)
-			{
-				PerceptionManagerRef->AddArrayElement(PerceptionPartCreated);
-			}
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Invalid Part"));
-			return;
-		}
-
-		ValidateListsCondition(LoadedPart);
+		int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
+		LoadedPart = dynamic_cast<UBodyPart*>(OwnerCharacter->AddComponentByClass(
+			PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex], false, this->GetRelativeTransform(), false));
 	}
+
+	SetMeshes(LoadedPart, PartType);
+	++ArrayIndex;
 }
 
 void UConnectorPart::ReinitPossibleParts(TArray<FIndividualBodyPart> PartsArray)
@@ -253,7 +281,7 @@ void UConnectorPart::ValidateListsCondition(UBodyPart* LoadedPart)
 {
 	for (int k = 0; k < WhiteListRef.Num(); k++)
 	{
-		if (LoadedPart->GetFName() == WhiteListRef[k].Condition->GetDefaultObject()->GetFName() &&
+		if (LoadedPart->GetClass()->GetDefaultObject()->GetFName() == WhiteListRef[k].Condition->GetDefaultObject()->GetFName() &&
 			!WhiteListRef[k].GetConditionFilledState())
 		{
 			WhiteListRef[k].SetConditionFilledState(true);
@@ -265,7 +293,7 @@ void UConnectorPart::ValidateListsCondition(UBodyPart* LoadedPart)
 
 	for (int l = 0; l < BlackListRef.Num(); l++)
 	{
-		if (LoadedPart->GetFName() == BlackListRef[l].Condition->GetDefaultObject()->GetFName() &&
+		if (LoadedPart->GetClass()->GetDefaultObject()->GetFName() == BlackListRef[l].Condition->GetDefaultObject()->GetFName() &&
 			!BlackListRef[l].GetConditionFilledState())
 		{
 			RemoveBlackListedParts(l);
@@ -275,6 +303,47 @@ void UConnectorPart::ValidateListsCondition(UBodyPart* LoadedPart)
 				*LoadedPart->GetFName().ToString());
 		}
 	}
+}
+
+void UConnectorPart::SetMeshes(UBodyPart* LoadedPart, EBodyPartType PartType)
+{
+	if (LoadedPart && PartType == EBodyPartType::INTERACTION)
+	{
+		TObjectPtr<UInteractionPart> InteractionPartCreated = Cast<UInteractionPart>(LoadedPart);
+
+		InteractionPartCreated->SetLeaderPoseComponent(this);
+		if (InteractionPartCreated)
+		{
+			InteractionManagerRef->AddArrayElement(InteractionPartCreated);
+		}
+	}
+	else if (LoadedPart && PartType == EBodyPartType::LOCOMOTION)
+	{
+		TObjectPtr<ULocomotionPart> LocomotionPartCreated = Cast<ULocomotionPart>(LoadedPart);
+
+		LocomotionPartCreated->SetLeaderPoseComponent(this);
+		if (LocomotionPartCreated)
+		{
+			LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
+		}
+	}
+	else if (LoadedPart && PartType == EBodyPartType::PERCEPTION)
+	{
+		TObjectPtr<UPerceptionPart> PerceptionPartCreated = Cast<UPerceptionPart>(LoadedPart);
+
+		PerceptionPartCreated->SetLeaderPoseComponent(this);
+		if (PerceptionPartCreated)
+		{
+			PerceptionManagerRef->AddArrayElement(PerceptionPartCreated);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid Part"));
+		return;
+	}
+
+	ValidateListsCondition(LoadedPart);
 }
 
 FIndividualBodyPart::FIndividualBodyPart()
