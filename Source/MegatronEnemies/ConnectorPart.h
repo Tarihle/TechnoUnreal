@@ -60,9 +60,9 @@ class MEGATRONENEMIES_API UConnectorPart : public UBodyPart
 	void BeginPlay() override;
 	void EndPlay(EEndPlayReason::Type Reason) override;
 
-	UFUNCTION()
 	void GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArray, EBodyPartType PartType);
 	void ReinitPossibleParts(TArray<FIndividualBodyPart> PartsArray);
 	void RemoveBlackListedParts(int ArrayIndex);
 	void ValidateListsCondition(UBodyPart* LoadedPart);
+	void SetMeshes(UBodyPart* LoadedPart, EBodyPartType PartType);
 };
