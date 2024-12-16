@@ -22,8 +22,11 @@ void UPerceptionPart::InitializeComponent()
 
 	if (APawn* PawnOwner = Cast<APawn>(GetOwner()))
 	{
-		UActorComponent* Component = PawnOwner->Controller->GetComponentByClass(UAIPerceptionComponent::StaticClass());
-		PerceptionComponent = dynamic_cast<UAIPerceptionComponent*>(Component);
+		if (PawnOwner->Controller)
+		{
+			UActorComponent* Component = PawnOwner->Controller->GetComponentByClass(UAIPerceptionComponent::StaticClass());
+			PerceptionComponent = dynamic_cast<UAIPerceptionComponent*>(Component);
+		}
 	}
 
 	if (!PerceptionComponent)
