@@ -60,9 +60,6 @@ class MEGATRONENEMIES_API UBodyPart : public USkeletalMeshComponent
 	UBodyPart();
 	virtual void InitializeComponent() override;
 
-	UPROPERTY(BlueprintReadOnly, Category = MeshRef)
-	TObjectPtr<USkeletalMeshComponent> RefMeshComponent;
-
 	/* Get action from Gameplay Tag as specified in ActionMap. Returns Null on failure */
 	UFUNCTION(BlueprintPure)
 	class UMegatronTask* GetTask(FGameplayTag Tag);

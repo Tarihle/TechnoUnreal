@@ -89,9 +89,7 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 {
 	for (int ArrayIndex = 0; ArrayIndex < PartsArray.Num(); ArrayIndex++)
 	{
-		USkeletalMeshComponent* Ref =
-			Cast<USkeletalMeshComponent>(PartsArray[ArrayIndex].MeshReference.GetComponent(OwnerCharacter));
-		if (!Ref || !(PartsArray[ArrayIndex].DefaultPart || PartsArray[ArrayIndex].PossibleParts))
+		if (!(PartsArray[ArrayIndex].DefaultPart || PartsArray[ArrayIndex].PossibleParts))
 		{
 			UE_LOG(LogTemp, Error, TEXT("No Ref or no element in PartsArray"));
 			return;
@@ -103,17 +101,17 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 		if (PartsArray[ArrayIndex].DefaultPart)
 		{
 			LoadedPartClass = PartsArray[ArrayIndex].DefaultPart->StaticClass();
-			LoadedPart = dynamic_cast<UBodyPart*>(
-				OwnerCharacter->AddComponentByClass(PartsArray[ArrayIndex].DefaultPart, false, OwnerCharacter->GetTransform(), false));
+			LoadedPart = dynamic_cast<UBodyPart*>(OwnerCharacter->AddComponentByClass(
+				PartsArray[ArrayIndex].DefaultPart, false, this->GetRelativeTransform(), false));
 			UE_LOG(LogTemp, Display, TEXT("%s"), *PartsArray[ArrayIndex].DefaultPart.GetDefaultObject()->GetFName().ToString());
 		}
 		else
 		{
 			int32 RandIndex = FMath::RandRange(0, PartsArray[ArrayIndex].PossibleParts->GetPartArray().Num() - 1);
 			LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex]->StaticClass();
-			LoadedPart = dynamic_cast<UBodyPart*>(
-				OwnerCharacter->AddComponentByClass(PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex],
-					false, OwnerCharacter->GetTransform(), false));
+			LoadedPart = dynamic_cast<UBodyPart*>(OwnerCharacter->AddComponentByClass(
+				PartsArray[ArrayIndex].PossibleParts->GetPartArray()[RandIndex], false, this->GetRelativeTransform(),
+				false));
 			bool  PartUsed = false;
 			int32 RandWeight = 99;
 
@@ -138,9 +136,9 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 							if (oui < WhiteListRef[i].GetReactorWeight(ReactorIndex))
 							{
 								LoadedPartClass = PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j]->StaticClass();
-								LoadedPart = dynamic_cast<UBodyPart*>(
-								OwnerCharacter->AddComponentByClass(PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j],
-									false, OwnerCharacter->GetTransform(), false));
+								LoadedPart = dynamic_cast<UBodyPart*>(OwnerCharacter->AddComponentByClass(
+									PartsArray[ArrayIndex].PossibleParts->GetPartArray()[j], false,
+									this->GetRelativeTransform(), false));
 								UE_LOG(LogTemp, Display, TEXT("Using %s from WhiteList."), *LoadedPart->GetFName().ToString());
 							}
 							else
@@ -160,10 +158,7 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 		{
 			TObjectPtr<UInteractionPart> InteractionPartCreated = Cast<UInteractionPart>(LoadedPart);
 
-			Ref->SetSkeletalMesh(InteractionPartCreated->GetSkeletalMeshAsset());
-			InteractionPartCreated->SetHiddenInGame(true);
-			InteractionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			InteractionPartCreated->RefMeshComponent = Ref;
+			InteractionPartCreated->SetLeaderPoseComponent(this);
 			if (InteractionPartCreated)
 			{
 				InteractionManagerRef->AddArrayElement(InteractionPartCreated);
@@ -173,10 +168,7 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 		{
 			TObjectPtr<ULocomotionPart> LocomotionPartCreated = Cast<ULocomotionPart>(LoadedPart);
 
-			Ref->SetSkeletalMesh(LocomotionPartCreated->GetSkeletalMeshAsset());
-			LocomotionPartCreated->SetHiddenInGame(true);
-			LocomotionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			LocomotionPartCreated->RefMeshComponent = Ref;
+			LocomotionPartCreated->SetLeaderPoseComponent(this);
 			if (LocomotionPartCreated)
 			{
 				LocomotionManagerRef->AddArrayElement(LocomotionPartCreated);
@@ -186,10 +178,7 @@ void UConnectorPart::GenerateIndividualPart(TArray<FIndividualBodyPart> PartsArr
 		{
 			TObjectPtr<UPerceptionPart> PerceptionPartCreated = Cast<UPerceptionPart>(LoadedPart);
 
-			Ref->SetSkeletalMesh(PerceptionPartCreated->GetSkeletalMeshAsset());
-			PerceptionPartCreated->SetHiddenInGame(true);
-			PerceptionPartCreated->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-			PerceptionPartCreated->RefMeshComponent = Ref;
+			PerceptionPartCreated->SetLeaderPoseComponent(this);
 			if (PerceptionPartCreated)
 			{
 				PerceptionManagerRef->AddArrayElement(PerceptionPartCreated);
@@ -230,7 +219,8 @@ void UConnectorPart::RemoveBlackListedParts(int ArrayIndex)
 			{
 				if (Interaction.PossibleParts && Interaction.PossibleParts->RemoveByName(BodyPart))
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Successfully removed %s from InteractionParts"), *BodyPart->GetFName().ToString());
+					UE_LOG(
+						LogTemp, Warning, TEXT("Successfully removed %s from InteractionParts"), *BodyPart->GetFName().ToString());
 				}
 			}
 		}

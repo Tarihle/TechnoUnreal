@@ -12,9 +12,6 @@ struct FIndividualBodyPart
 	GENERATED_BODY()
 
   public:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite/*, meta = (UseComponentPicker, AllowedClasses = "SkeletalMeshComponent", DisallowedClasses = "StaticMeshComponent")*/)
-	FComponentReference MeshReference;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ForceRebuildProperty = "DefaultPart"))
 	TSubclassOf<UBodyPart> DefaultPart;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
