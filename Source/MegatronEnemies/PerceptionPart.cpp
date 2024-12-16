@@ -22,6 +22,8 @@ void UPerceptionPart::InitializeComponent()
 
 	if (APawn* PawnOwner = Cast<APawn>(GetOwner()))
 	{
+		PerceptionComponent = nullptr;
+
 		if (PawnOwner->Controller)
 		{
 			UActorComponent* Component = PawnOwner->Controller->GetComponentByClass(UAIPerceptionComponent::StaticClass());
