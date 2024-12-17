@@ -68,3 +68,11 @@ UGenerationParameters* UMegatronManager::GetGenParams()
 {
 	return GenerationParameters;
 }
+
+void UMegatronManager::ClearOnScreenDebugMessages()
+{
+	if (GEngine)
+	{
+		GEngine->ClearOnScreenDebugMessages();
+	}
+}

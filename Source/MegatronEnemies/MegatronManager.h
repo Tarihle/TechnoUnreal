@@ -30,6 +30,9 @@ class MEGATRONENEMIES_API UMegatronManager : public UActorComponent
 	UFUNCTION(BlueprintPure)
 	class UGenerationParameters* GetGenParams();
 
+	UFUNCTION(BlueprintCallable, Category = "Utilities|String")
+	virtual void ClearOnScreenDebugMessages();
+
   protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
